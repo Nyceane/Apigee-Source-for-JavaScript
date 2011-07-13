@@ -81,7 +81,7 @@ function ApigeeApp(appName,requestParams) {
       var providername = requestParams[0];
       if (!(theApp.providers.hasOwnProperty(providername))) {
         theApp.providers[providername] = new ApigeeProvider(providername);   
-        showResponseMessage(providername+' uses OAuth 1.0a. You will need the Consumer Key and Consumer Secret that '+providername+' provides for your app, see: <a href="http://dev.twitter.com/applications" title="documentation">http://dev.twitter.com/applications</a><br /><span>[<strong>'+providername+' added to '+theApp.appName+'</strong> - You\'ve completed step 2 of 5]</span>');   
+        showResponseMessage(providername+' uses OAuth 1.0a. You will need the Consumer Key and Consumer Secret that '+providername+' provides for your app, see: <a href="https://dev.twitter.com/" title="documentation" target="_blank">https://dev.twitter.com/</a><br /><span>[<strong>'+providername+' added to '+theApp.appName+'</strong> - You\'ve completed step 2 of 5]</span>');   
       }
     }
   }
@@ -116,8 +116,9 @@ function ApigeeApp(appName,requestParams) {
     if ($.isArray(requestParams)) {
       theApp.api.request(verb,requestParams,{},{'endpoint':'http://'+theApp.appName+'-api.apigee.com/v1','callback':'cliApps["'+theApp.appName+'"].'+verb});
     } else {
-      var requestParams = parseAndReturn(requestParams);
-      showResponseMessage('Congrats, you\'ve made an authenticated call!<br /><span>[<strong>Source Setup Complete!</strong>]</span><br /><a href="#" title="download">Download the code library</a> and paste your endpoint into the sample app source code: http://'+theApp.appName+'-api.apigee.com<br />Upload the sample app to the web server of your choice and off you go!<br />Thank you for getting your app started with Apigee Source.  Please send feedback to <a href="mailto:feedback@apigee.com?subject=Source Labs Feedback" title="send feedback">feedback@apigee.com</a>');      
+      //var requestParams = parseAndReturn(requestParams);
+      cliApps[theApp.appName].requestParams = requestParams;
+      showResponseMessage('Congrats, you\'ve made an authenticated call!<br /><a href="#" title="full response" onClick="var newWin = window.open(null,\'Source Response\'); newWin.document.body.innerHTML = cliApps.'+theApp.appName+'.requestParams; return false;">Open full response in new window</a><br /><span>[<strong>Source Setup Complete!</strong>]</span><br /><a href="#" title="download">Download the code library</a> and paste your endpoint into the sample app source code: http://'+theApp.appName+'-api.apigee.com<br />Upload the sample app to the web server of your choice and off you go!<br />Thank you for getting your app started with Apigee Source.  Please send feedback to <a href="mailto:feedback@apigee.com?subject=Source Labs Feedback" title="send feedback">feedback@apigee.com</a>'); 
     }
   }
   this.init = function(appName,requestParams) {

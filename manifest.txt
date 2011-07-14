@@ -1,5 +1,6 @@
 v2/index.html
 v2/howto.html
+v2/updates.html
 v2/js/apigee_api.js
 v2/js/apigee_cli.js
 v2/js/base64_min.js

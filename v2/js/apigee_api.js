@@ -54,7 +54,7 @@
 */
     this.request = function(verb,request,headers,settings) {
       if (request) {
-        var request = request;
+        var request = encodeURI(request);
         var returnObject = {};
         var verb = verb || theApi.defaults.verb;
         var headers = headers || {};
@@ -67,7 +67,9 @@
           };
           for (var i=0; i<requestHeaders.length; i++) {
             var thisPair = requestHeaders[i].split('=');
-            extraHeaders[thisPair[0]] = requestHeaders[i].substring(thisPair[0].length + 1);
+            if (thisPair.length > 1) {
+              extraHeaders[thisPair[0]] = requestHeaders[i].substring(thisPair[0].length + 1);
+            }
           }
           $.extend(extraHeaders, headers);
           headers = extraHeaders;

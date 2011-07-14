@@ -11,6 +11,9 @@ function ApigeeCli() {
       } else if (commandObject.noun === 'create') {
         var appName = commandObject.verb;
         if (!(theCli.apps[appName])) theCli.apps[appName] = new ApigeeApp(appName,commandObject.params);
+      } else if (commandObject.noun === 'delete') {
+        var appName = commandObject.verb;
+        if (theCli.apps[appName]) theCli.apps[appName].delete();
       } else {
         console.log('Could not build request');
       }
@@ -61,6 +64,16 @@ function ApigeeApp(appName,requestParams) {
       theApp.api.request('post','apps',{'appName':appName,'displayName':appName,'version':'0'},{'callback':'cliApps["'+appName+'"].create'});
     }
   }
+  this.delete = function(requestParams) {
+    if (requestParams) {
+      var requestParams = parseAndReturn(requestParams);
+      var appName = (requestParams.hasOwnProperty("appName")) ? requestParams.appName : 'application';
+      showResponseMessage('<span>[<strong>'+appName+' deleted</strong>]</span>');
+      if (cliApps[appName]) cliApps[appName] = null;
+    } else {
+      theApp.api.request('delete','apps/'+theApp.appName,{},{'callback':'cliApps["'+theApp.appName+'"].delete'});
+    }
+  }
   this.configure = function(requestParams) {
     if ($.isArray(requestParams)) {
       if (theApp.providers.hasOwnProperty(requestParams[0]) && (requestParams.length === 3)) {
@@ -96,7 +109,7 @@ function ApigeeApp(appName,requestParams) {
       var requestParams = parseAndReturn(requestParams);
       if (requestParams.hasOwnProperty('userName') && requestParams.hasOwnProperty('smartKey')) {
         theApp.users[requestParams.userName] = new ApigeeUser(requestParams);
-        showResponseMessage('Username and password exchanged for an Apigee SmartKey.  The SmartKey for '+requestParams.userName+' is '+requestParams.smartKey+'.  You\'ll use this SmartKey to authorize all API calls on behalf of this new user.<br />Keep this secret safe!<br /><span>[<strong>user '+requestParams.userName+' added to '+theApp.appName+'</strong>]</span><br /><a href="http://'+theApp.appName+'-api.apigee.com/v1/providers/twitter/authenticate?smartkey='+requestParams.smartKey+'&app_callback=https://apigee.com/oauthSuccess.jsp" title="authenticate in a new window" target="_blank">Connect the '+theApp.appName+' application user to a twitter account</a> for API request testing.<br /><span>[<strong>After you connect the user to the twitter account</strong> - You\'ve completed step 4 of 5]</span>');         
+        showResponseMessage('Username and password exchanged for an Apigee SmartKey.<br />The SmartKey for '+requestParams.userName+' is <strong class="smartkey">'+requestParams.smartKey+'</strong>.<br />You\'ll use this SmartKey to authorize all API calls on behalf of this new user.<br />Keep this secret safe!<br /><span>[<strong>user '+requestParams.userName+' added to '+theApp.appName+'</strong>]</span><br /><br /><a href="http://'+theApp.appName+'-api.apigee.com/v1/providers/twitter/authorize?smartkey='+requestParams.smartKey+'&app_callback=https://apigee.com/oauthSuccess.jsp" title="authenticate in a new window" target="_blank">Connect the '+theApp.appName+' application user to a twitter account</a> for API request testing.<br /><span>[<strong>After you connect the user to the twitter account</strong> - You\'ve completed step 4 of 5]</span>');         
       }
     }
   }
@@ -114,11 +127,11 @@ function ApigeeApp(appName,requestParams) {
   }
   this.verbRequest = function(verb,requestParams) {
     if ($.isArray(requestParams)) {
-      theApp.api.request(verb,requestParams,{},{'endpoint':'http://'+theApp.appName+'-api.apigee.com/v1','callback':'cliApps["'+theApp.appName+'"].'+verb});
+      theApp.api.request(verb,requestParams,{},{'endpoint':'https://'+theApp.appName+'-api.apigee.com/v1','callback':'cliApps["'+theApp.appName+'"].'+verb});
     } else {
       //var requestParams = parseAndReturn(requestParams);
       cliApps[theApp.appName].requestParams = requestParams;
-      showResponseMessage('Congrats, you\'ve made an authenticated call!<br /><a href="#" title="full response" onClick="var newWin = window.open(null,\'Source Response\'); newWin.document.body.innerHTML = cliApps.'+theApp.appName+'.requestParams; return false;">Open full response in new window</a><br /><span>[<strong>Source Setup Complete!</strong>]</span><br /><a href="#" title="download">Download the code library</a> and paste your endpoint into the sample app source code: http://'+theApp.appName+'-api.apigee.com<br />Upload the sample app to the web server of your choice and off you go!<br />Thank you for getting your app started with Apigee Source.  Please send feedback to <a href="mailto:feedback@apigee.com?subject=Source Labs Feedback" title="send feedback">feedback@apigee.com</a>'); 
+      showResponseMessage('Congrats, you\'ve made an authenticated call!<br /><a href="#" title="full response" onClick="var newWin = window.open(null,\'Source Response\'); newWin.document.body.innerHTML = cliApps.'+theApp.appName+'.requestParams; return false;">Open full response in new window</a><br /><span>[<strong>Source Setup Complete!</strong>]</span><br /><br /><a href="https://github.com/apigee/Apigee-Source-for-JavaScript" title="download" target="_blank">Download the code library</a> and paste your endpoint into the sample app source code: http://'+theApp.appName+'-api.apigee.com<br />Upload the sample app to the web server of your choice and off you go!<br />Thank you for getting your app started with Apigee Source.  Please send feedback to <a href="mailto:feedback@apigee.com?subject=Source Labs Feedback" title="send feedback">feedback@apigee.com</a>'); 
     }
   }
   this.init = function(appName,requestParams) {

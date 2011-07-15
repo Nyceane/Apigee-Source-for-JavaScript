@@ -27,19 +27,19 @@
 		Now that you've added Twitter to your application SmartKey, you need to sign in to dev.twitter.com, register an application, set it up, and retrieve your consumer token and secret.
 	</p>
 	<p>
-		When you have retrieved your consumer token and secret, type:
+		When you have retrieved your consumer key and secret, type:
 	</p>
 	<p class="console">
-		<span>yourappname</span> configure twitter <span>token</span> <span>secret</span>
+		<span>yourappname</span> configure twitter <span>key</span> <span>secret</span>
 	</p>
 	<p>
-		Note: In order to retrieve your Twitter consumer token and consumer secret, you'll need to:
+		Note: In order to retrieve your Twitter consumer key and consumer secret, you'll need to:
 	</p>
 	<ol>
 		<li>Sign in to <a href="https://dev.twitter.com/apps" title="dev.twitter.com" target="_blank">dev.twitter.com</a> (opens in a new window)</li>
 		<li>Create a new application</li>
 		<li>Set application type: Browser</li>
-		<li>Set the callback url to be: <em>https://yourappname-api.apigee.com/authcallback/twitter</em></li>
+		<li>Set the callback url to be: <em>https://<b>yourappname</b>-api.apigee.com/authcallback/twitter</em></li>
 		<li>Set default access type: Read/write</li>
 		<li>Set default access type: Read/write</li>
 		<li>Once you've registered, go to settings and you'll see your Consumer Token and Secret.</li>
@@ -65,21 +65,12 @@
 	</p>
 </section>
 <section>
-	<h1>Step 5: Add credentials to the SmartKey</h1>
-	<p>
-		Sign in with Twitter and and make this application trusted, you'll be redirected back to Apigee Source setup and your Twitter credentials will be displayed.
-	<p>Once you have your credentials, type:</p>
-	<p class="console">
-		<span>yourappname</span> add twitter <span>access_token</span> <span>access_token_secret</span> to smartkey <span>SmartKey-string</span>
-	</p>
-</section>
-<section>
-	<h1>Step 6: Make an authenticated request to the Twitter API</h1>
+	<h1>Step 5: Make an authenticated request to the Twitter API</h1>
 	<p>
 		Now that your SmartKey has stored the Twitter credentials for this end-user, you can make an authenticated request to validate that your source application is up and running.
 	<p>Type:</p>
 	<p class="console">
-		<span>yourappname</span> get https://<span>yourappname</span>-api.apigee.com/twitter/1/statuses/home_timeline.json?smartkey=<span>smartkey</span>
+		<span>yourappname</span> get /twitter/1/statuses/home_timeline.json?smartkey=<span>smartkey</span>
 	</p>
 	<h2>Go forth and applicate!</h2>
 	<p>Now that you know how to make a request using Apigee Source: </p>

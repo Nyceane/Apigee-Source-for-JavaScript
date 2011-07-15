@@ -97,7 +97,7 @@ function ApigeeApp(appName,requestParams) {
       var providername = requestParams[0];
       if (!(theApp.providers.hasOwnProperty(providername))) {
         theApp.providers[providername] = new ApigeeProvider(providername);   
-        showResponseMessage(providername+' uses OAuth 1.0a. You will need the Consumer Key and Consumer Secret that '+providername+' provides for your app, see: <a href="https://dev.twitter.com/" title="documentation" target="_blank">https://dev.twitter.com/</a><br /><span>[<strong>'+providername+' added to '+theApp.appName+'</strong> - You\'ve completed step 2 of 5]</span>');   
+        showResponseMessage(providername+' uses OAuth 1.0a. You will need the Consumer Key and Consumer Secret that '+providername+' provides for your app, see: <a href="https://dev.twitter.com/apps" title="documentation" target="_blank">https://dev.twitter.com/apps</a><br /><span>[<strong>'+providername+' added to '+theApp.appName+'</strong> - You\'ve completed step 2 of 5]</span>');   
       }
     }
   }

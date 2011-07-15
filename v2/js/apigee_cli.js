@@ -13,7 +13,7 @@ function ApigeeCli() {
         if (!(theCli.apps[appName])) theCli.apps[appName] = new ApigeeApp(appName,commandObject.params);
       } else if (commandObject.noun === 'delete') {
         var appName = commandObject.verb;
-        if (theCli.apps[appName]) theCli.apps[appName].delete();
+        if (theCli.apps[appName]) theCli.apps[appName].deleteApp;
       } else {
         console.log('Could not build request');
       }
@@ -64,7 +64,7 @@ function ApigeeApp(appName,requestParams) {
       theApp.api.request('post','apps',{'appName':appName,'displayName':appName,'version':'0'},{'callback':'cliApps["'+appName+'"].create'});
     }
   }
-  this.delete = function(requestParams) {
+  this.deleteApp = function(requestParams) {
     if (requestParams) {
       var requestParams = parseAndReturn(requestParams);
       var appName = (requestParams.hasOwnProperty("appName")) ? requestParams.appName : 'application';

@@ -100,6 +100,7 @@
             returnObject.response_message = textStatus;
             returnObject.payload = data;
             returnObject.xhr = jqXHR;
+            theApi.returnObject = returnObject;
             if (settings.callback) {
               var textData = ((typeof data) != 'string') ? JSON.stringify(data) : data;
               var callbackFunction = new Function(settings.callback+'(\''+textData.replace(/'/g, "\\'")+'\')');

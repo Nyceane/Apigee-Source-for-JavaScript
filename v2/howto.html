@@ -22,9 +22,9 @@
 	</p>
 </section>
 <section>
-	<h1>Step 3: Add Twitter consumer token and secret to your application</h1>
+	<h1>Step 3: Add Twitter consumer key and secret to your application</h1>
 	<p>
-		Now that you've added Twitter to your application SmartKey, you need to sign in to dev.twitter.com, register an application, set it up, and retrieve your consumer token and secret.
+		Now that you've added Twitter to your application, you need to sign in to dev.twitter.com, register an application, set it up, and retrieve your consumer key and secret.
 	</p>
 	<p>
 		When you have retrieved your consumer key and secret, type:
@@ -38,10 +38,15 @@
 	<ol>
 		<li>Sign in to <a href="https://dev.twitter.com/apps" title="dev.twitter.com" target="_blank">dev.twitter.com</a> (opens in a new window)</li>
 		<li>Create a new application</li>
-		<li>Set application type: Browser</li>
+		<li>Give it a name</li>
+		<li>Give it a description</li>
+		<li>Add a web site (any URL will do to get up and running)</li>
 		<li>Set the callback url to be: <em>https://<b>yourappname</b>-api.apigee.com/authcallback/twitter</em></li>
-		<li>Set default access type: Read/write</li>
-		<li>Set default access type: Read/write</li>
+		<li>Agree to the terms</li>
+		<li>Prove that you're human with the CAPTCHA</li>
+		<li>Click the "create your Twitter application" button, and you'll be taken to the Details page for your newly-created application</li>
+		<li>Under "OAuth Settings" you'll see your Consumer Key and Consumer Secret. You'll need these to make your next comamnd in the setup CLI</li>
+		<li>The default access level is read-only. If you want to have write access, you'll need to click on the "settings" tab and change it.</li>
 		<li>Once you've registered, go to settings and you'll see your Consumer Token and Secret.</li>
 	</ol>
 </section>

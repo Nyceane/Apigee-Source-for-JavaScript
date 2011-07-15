@@ -1,89 +1,930 @@
-<section>
-	<h1>Step 1: Create an application</h1>
-	<p>
-		An application is a collection of one or more APIs that are accessed by an application. You already have an account, so let's start by setting up your first app.
-	</p>
-	<p>Type:</p>
-	<p class="console">
-		create app <span>yourappname</span>
-	</p>
-</section>
-<section>
-	<h1>Step 2: Add an API provider to this application</h1>
-	<p>
-		Now that you've created an application, you'll use an Apigee SmartKey to store and manage your application credentials. Your SmartKey will make it easy to sign API calls for Twitter in your application.
-	</p>
-	<p>
-		<em>Apigee Source only supports the Twitter API, so this is the API you'll be adding. </em>
-	</p>
-	<p>Type:</p>
-	<p class="console">
-		<span>yourappname</span> add provider twitter
-	</p>
-</section>
-<section>
-	<h1>Step 3: Add Twitter consumer key and secret to your application</h1>
-	<p>
-		Now that you've added Twitter to your application, you need to sign in to dev.twitter.com, register an application, set it up, and retrieve your consumer key and secret.
-	</p>
-	<p>
-		When you have retrieved your consumer key and secret, type:
-	</p>
-	<p class="console">
-		<span>yourappname</span> configure twitter <span>key</span> <span>secret</span>
-	</p>
-	<p>
-		Note: In order to retrieve your Twitter consumer key and consumer secret, you'll need to:
-	</p>
-	<ol>
-		<li>Sign in to <a href="https://dev.twitter.com/apps" title="dev.twitter.com" target="_blank">dev.twitter.com</a> (opens in a new window)</li>
-		<li>Create a new application</li>
-		<li>Give it a name</li>
-		<li>Give it a description</li>
-		<li>Add a web site (any URL will do to get up and running)</li>
-		<li>Set the callback url to be: <em>https://<b>yourappname</b>-api.apigee.com/authcallback/twitter</em></li>
-		<li>Agree to the terms</li>
-		<li>Prove that you're human with the CAPTCHA</li>
-		<li>Click the "create your Twitter application" button, and you'll be taken to the Details page for your newly-created application</li>
-		<li>Under "OAuth Settings" you'll see your Consumer Key and Consumer Secret. You'll need these to make your next comamnd in the setup CLI</li>
-		<li>The default access level is read-only. If you want to have write access, you'll need to click on the "settings" tab and change it.</li>
-		<li>Once you've registered, go to settings and you'll see your Consumer Token and Secret.</li>
-	</ol>
-</section>
-<section>
-	<h1>Step 4: Add a User</h1>
-	<p>
-		In order to validate that you can make an API request with your Source application, you'll want to create a user and associate it with a Twitter account.
-	</p>
-	<p>
-		A user needs a unique username (email address ok) and password. These will be mapped to a SmartKey. 
-	</p>
-	<p>
-		You'll use a SmartKey to authorize all API calls on behalf of a user. 
-	</p>
-	<p>Type:</p>
-	<p class="console">
-		<span>yourappname</span> add user <span>username</span> <span>password</span>
-	</p>
-	<p>
-		Follow the link to begin the OAuth dance.
-	</p>
-</section>
-<section>
-	<h1>Step 5: Make an authenticated request to the Twitter API</h1>
-	<p>
-		Now that your SmartKey has stored the Twitter credentials for this end-user, you can make an authenticated request to validate that your source application is up and running.
-	<p>Type:</p>
-	<p class="console">
-		<span>yourappname</span> get /twitter/1/statuses/home_timeline.json?smartkey=<span>smartkey</span>
-	</p>
-	<h2>Go forth and applicate!</h2>
-	<p>Now that you know how to make a request using Apigee Source: </p>
-	<ol>
-		<li><a title="&el; or fork the repo" target="_blank" href="https://github.com/apigee/Apigee-Source-for-JavaScript">Download the library from Github</a></li>
-		<li>Paste your endpoint into the sample application</li>
-		<li>Host your sample application</li>
-		<li>Log in using the end user you created above, or register as a new end user of the sample application (if you choose the latter, you'll also have to grant permission with Twitter)</li>
-		<li>See the Source app working!</li>
-	</ol>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>How to set up an Apigee Source application</title>
+    <!--[if IE]>
+      <script src="./js/html5shiv.js"></script>
+    <![endif]-->
+<style type="text/css">
+/* ------------------------------------------ */
+/* RESETS, BASIC PAGE SETUP, BASIC TYPOGRAPHY */
+/* ------------------------------------------ */
+* { margin: 0; padding: 0; }
+:focus { outline: 0; }
+html, body { height: 100%; }
+html { }
+body { 
+  min-width: 981px;
+  font: 11px arial, helvetica, garuda, sans-serif;
+  color: #3c3c3c;
+  background: #fff url(../images/top_stripe.png) repeat-x top left;
+}
+body.embedded {
+  min-width: 830px;
+}
+input, select, textarea {
+  font-family: arial, helvetica, garuda, sans-serif;
+  color: #3c3c3c;
+}
+textarea {
+  resize: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    vertical-align: baseline;
+}
+#container {
+  min-height: 100%;
+}
+a { outline: none; }
+a img { border: none; }
+a:link, a:visited {}
+a:hover {}
+a.current, li.current a {
+  cursor: default !important;
+}
+section, article, header, footer, nav, aside, hgroup { display: block; }
+#container, footer {
+  background: url(../images/sidebar_gradient_left.png) top left repeat-y, url(../images/sidebar_gradient_right.png) top right repeat-y;
+  padding: 0 10px;
+}
+.embedded #container, .embedded footer {
+  background: none;
+  padding: 0;
+}
+/* END RESET */
+
+#modal_screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: .50;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=50);
+}
+#modal_outer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 111;
+  width: 100%;
+  height: 100%;
+}
+#modal_mid {
+  position: relative;
+  top: 115px;
+  width: 505px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 3px solid #e2e2e2;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  padding: 10px;
+}
+#modal_mid a.close_modal {
+  text-decoration: none;
+  float: right;
+  display: block;
+  background: transparent url(../images/vi_modal_closebutton.png) no-repeat 0 0;
+  height: 24px;
+  width: 23px;
+  margin: -21px -20px 0 0;
+}
+.modal_inner {
+  background-color: #faf8d2;
+  border: 1px solid #d1d1d1;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  padding: 10px 0;
+}
+.modal_content {
+  max-height: 425px;
+  overflow-y: auto;
+  padding: 0 0 0 20px;
+}
+.modal_content article {
+  padding: 10px 20px 10px 0;
+  font-size: 13px;
+  color: #3c3c3c;
+}
+.modal_content h1 {
+  font-weight: normal;
+  line-height: 25px;
+  font-size: 22px;
+  margin-bottom: 23px;
+}
+.modal_content h1.labs_icon {
+  background: transparent url(../images/labs_icon_small.png) no-repeat 0 50%;
+  padding-left: 30px;
+}
+.modal_content h2 {
+  font-weight: normal;
+  color: #5ab309;
+  font-size: 16px;
+}
+.modal_content p {
+  line-height: 1.6em;
+  padding: .25em 0 1.6em 0;
+}
+.modal_content p:last-child {
+  padding-bottom: 5px;
+}
+.modal_content a {
+  color: #ff4300;
+  text-decoration: underline;
+}
+.modal_content a:hover {
+  color: #43617e;
+}
+/* ALERT OVERRIDE STYLING BEGINS HERE */
+#alert_box {
+  z-index: 777;
+  position: fixed;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+.alert_box_inner {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  max-width: 400px;
+  text-align: left;
+  border: 3px solid #7db610;
+  -moz-box-shadow: 3px 3px 5px #666;
+  -webkit-box-shadow: 3px 3px 5px #666;
+  box-shadow: 3px 3px 5px #666;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5em;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  margin: 0 auto;
+  padding: 7px 20px 7px 40px;
+  background: #3c3c3c url(../images/alert_checkmark.png) no-repeat 10px 7px;
+}
+#alert_box.alert_type_error .alert_box_inner {
+  background-image: url(../images/alert_x.png);
+  border-color: #e50000;
+}
+.alert_box_inner div {
+  opacity: .95;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    filter: alpha(opacity=95);
+}
+.alert_box_inner a.close_alert {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  float: right;
+  text-decoration: none;
+  width: 15px;
+  margin: 0 -10px 0 10px;
+  background: transparent url(../images/close_alert.png) no-repeat 0 50%;
+}
+/* ALERT OVERRIDE STYLING ENDS HERE */
+ 
+a.inactive_button {
+  opacity: .50;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    cursor: default !important;
+}
+header {
+  background: #fff url(../images/top_stripe.png) repeat-x top left;
+  padding-top: 8px;
+  border-top: none;
+}
+.embedded header {
+  border-top: none;
+  background: none;
+  padding-top: 0;
+}
+header a#logo {
+  display: block;
+  padding: 15px 20px 13px 15px;
+  float: left;
+}
+header nav {
+  padding-left: 15px;
+  float: left;
+  background-color: transparent;
+}
+header nav a:link, header nav a:visited {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  text-decoration: none;
+  font-size: 14px;
+  color: #3c3c3c;
+  margin: 0 18px 0 0;
+  padding: 18px 0 0 0;
+  line-height: 1.4em;
+  float: none;
+  height: auto;
+  width: auto;
+}
+header nav a:hover, header nav a.current {
+  color: #ff4300;
+}
+header nav a.current {
+  background: transparent url(../images/nav_current_carat.png) no-repeat 50% 0 !important;
+}
+header nav a sup {
+  color: #fff;
+  background-color: #5ab309;
+  font-size: 11px;
+  line-height: 0;
+  padding: 0 2px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  margin: 0 -26px 0 3px;
+}
+header ul#user_controls {
+  float: right;
+  list-style: none;
+  margin: 12px 5px 0 0;
+  line-height: 26px;
+}
+header ul#user_controls:hover {
+  background-color: #fff;
+  border-top: 1px solid #808080;
+  border-right: 1px solid #808080;
+  border-left: 1px solid #808080;
+  margin: 11px 4px 0 -1px;
+  -moz-box-shadow: 3px 3px 5px #666;
+  -webkit-box-shadow: 3px 3px 5px #666;
+  box-shadow: 3px 3px 5px #666;
+}
+#content.webapp article ul.tab_nav {
+  list-style-type: none;
+  padding: 9px 6px 0 16px;
+  background-repeat: no-repeat;
+  background-color: #4f5255;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4f5255), to(#696c6f));
+  background: -moz-linear-gradient(100% 0% 270deg,#4f5255, #696c6f);
+}
+#content.webapp article ul.tab_nav li {
+  margin: 0 3px 0 0;
+}
+#content.webapp article ul.tab_nav a {
+  padding: 0 9px;
+  border: none;
+  -moz-border-radius-topleft: 3px;
+  -webkit-border-top-left-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -webkit-border-top-right-radius: 3px;
+}
+#content.webapp article ul.tab_nav a:link, #content.webapp article ul.tab_nav a:visited {
+  color: #fff;
+  background: none;
+  background-color: transparent;
+}
+#content.webapp article ul.tab_nav a:hover {
+  background-color: #7e8184;
+}
+#content.webapp article ul.tab_nav a.current:link, #content.webapp article ul.tab_nav a.current:visited, #content.webapp article ul.tab_nav a.current:hover {
+  border: none;
+  background-color: #fff;
+  color: #000;
+}
+#content.webapp article ul.tab_nav a.labs.current {
+  background-color: #faf8d2;
+}
+#mode_tabs .tab a.labs.current, #mode_tabs .tab a.labs {
+  color: #010101;
+  background: #faf8d2;
+  border-bottom-color: #faf8d2;
+}
+#webapp_tab_display {
+  clear: both;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_holder, #content.webapp article #webapp_tab_display div.webapp_messaging_outer {
+  padding: 0;
+}
+#content.webapp article #webapp_tab_display div.iframe_holder div.webapp_messaging_holder {
+  padding-top: 10px;
+}
+div.webapp_messaging_holder {
+  text-align: center;
+}
+div.webapp_messaging_outer {
+  text-align: left;
+  width: auto;
+  margin: 14px auto 0 auto;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  background-color: #f4f4f4;
+  border: 5px solid #e2e2e2;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner {
+  font-family: arial, helvetica, garuda, sans-serif !important;
+  color: #3c3c3c;
+  padding: 20px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner h1 {
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: normal;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner h1.tip_icon {
+  background: transparent url(../images/header_tip.png) no-repeat 0 0;
+  padding-left: 32px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner p {
+  padding-left: 32px;
+  font-size: 13px;
+  margin: 5px 0 -3px 0;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner p strong {
+  font-size: 13px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner p strong.response_code_ok {
+  color: #5ab309;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner p strong.response_code_error {
+  color: #ff4300;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner ol {
+  list-style: lower-alpha inside;
+  margin: 5px 0 -6px 0;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner li {
+  background: transparent url(../images/alpha_bullet.png) no-repeat 0 50%;
+  color: #fff;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 27px;
+  padding-left: 3px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner li span {
+  color: #3c3c3c;
+  font-weight: normal;
+  font-size: 13px;
+  padding-left: 10px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner li span strong {
+  font-size: 13px;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner li span em {
+  color: #898989;
+}
+#webapp_header_display div.header_display_inner {
+  border-bottom: 1px solid #cfcfcf;
+  padding: 3px 15px 3px 20px;
+}
+#webapp_header_display div.header_display_inner.labs {
+  background: #faf8d2 url(../images/labs_icon_inline.png) no-repeat 20px 50%;
+  padding-left: 40px;
+}
+#webapp_header_display div.header_display_inner a {
+  color: #ff4300;
+  text-decoration: underline;
+}
+#webapp_header_display div.header_display_inner a:hover {
+  color: #43617e;
+}
+#webapp_header_display div.header_display_inner a.js_close_tip {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  width: 12px;
+  height: 15px;
+  background: transparent url(../images/x_icon_sprite.png) no-repeat 0 2px;
+  text-decoration: none;
+}
+#webapp_header_display div.header_display_inner a.js_close_tip:hover {
+  background-position: -12px -10px;
+}
+a.sharing_button, a.sharing_button.inactive_button:hover {
+  display: block;
+  line-height: 17px;
+  padding: 0 9px;
+  text-decoration: none !important;
+  float: right;
+  border: 1px solid #43617e;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-repeat: no-repeat;
+  background-color: #7597bd;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7597bd), to(#507399));
+  background: -moz-linear-gradient(100% 0% 270deg,#7597bd, #507399);
+}
+a.sharing_button:hover {
+  border-color: #43617e;
+  background-color: #596b7f;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#596b7f), to(#34465a));
+  background: -moz-linear-gradient(100% 0% 270deg,#596b7f, #34465a);
+}
+a.sharing_button span {
+  color: #fff;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  opacity: .95;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    filter: alpha(opacity=95);
+    font-size: 10px;
+    font-weight: bold;
+}
+a.sharing_button span.new_window_icon {
+  opacity: 1;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: alpha(opacity=100);
+    background: transparent url(../images/new_window_icon.png) no-repeat 50% 50%;
+    width: 10px;
+    margin: 0 -5px;
+}
+#content.webapp article #webapp_tab_display div pre {
+  color: #0b599f;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+#content.webapp article #webapp_tab_display div.iframe_holder {
+  padding: 0 0 20px 0;
+  overflow: hidden;
+}
+#content.webapp article #webapp_tab_display div iframe {
+  border: none;
+  height: inherit;
+  width: 100%;
+  margin-bottom: -20px;
+}
+.labs_text {
+  line-height: 19px;
+}
+.header_tip {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  line-height: 17px;
+  font-size: 11px;
+  color: #3c3c3c;
+  border: 1px solid #d8dfe7;
+  background-color: #e6ecf2;
+  padding: 0 3px 0 0;
+}
+.header_tip strong {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  text-transform: uppercase;
+  border-top: 1px solid #dd4c18;
+  border-bottom: 1px solid #dd4c18;
+  border-left: 1px solid #dd4c18;
+  margin: -1px 0 -1px -1px;
+  color: #fff;
+  background-color: #f26a3a;
+  padding: 0 3px;
+}
+.header_tip .tip_arrow {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  width: 5px;
+  margin: 0 3px 0 -3px;
+  background: transparent url(../images/tip_arrow.png) no-repeat 0 50%;
+}
+#console_banner .banner_inner {
+  width: 900px;
+}
+#console_banner h1 {
+  color: #3c3c3c;
+}
+#console_banner h1 span {
+  color: #a0a0a0;
+}
+#console_banner h1 span.callout_green {
+  color: #5ab309;
+}
+#console_banner img {
+  padding: 0 39px 0 40px;
+}
+#console_banner a {
+  text-decoration: underline;
+  font-weight: bold;
+  color: #ff4300;
+}
+#console_banner a:hover {
+  color: #43617e;
+}
+#console_banner a.button_link {
+  margin-top: 31px;
+  color: #fff;
+  text-decoration: none;
+}
+#content.console_banner_layout {
+  padding-bottom: 9px;
+}
+footer.feedback_form {
+  margin: -42px 0 0 0;
+  height: 41px;
+  line-height: 41px;
+  text-align: center;
+}
+footer.feedback_form.submitted_form {
+  background-color: #3f5064;
+}
+footer.feedback_form.submitted_form form {
+  display: none;
+}
+footer.feedback_form.submitted_form span.submitted_form {
+  text-align: center;
+  display: block;
+  float: none;
+  font-size: 18px;
+  color: #ecedef;
+}
+footer.feedback_form form {
+  width: 635px;
+  margin: 0 auto;
+}
+footer span.feedback_pointer {
+  float: none;
+  padding: 0;
+  background: transparent url(../images/feedback_pointer.png) no-repeat 0 50%;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  position: relative;
+  z-index: 50;
+  margin-right: -12px;
+  width: 34px;
+  height: 40px;
+}
+footer.feedback_form input {
+  border: 1px solid #2d2d2d;
+  background-color: #fff;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 0 5px 0 13px;
+  line-height: 24px;
+  height: 24px;
+  color: #213448;
+  font-size: 12px;
+  width: 430px;
+}
+footer.feedback_form input.empty_input {
+  background-color: #ced3d8;
+}
+footer.feedback_form input::-webkit-input-placeholder {
+  color: #213448;
+}
+footer.feedback_form input:-moz-placeholder {
+  color: #213448;
+}
+footer.feedback_form a.button_link {
+  margin: 7px 0 0 5px;
+  float: right;
+}
+footer.feedback_form a.button_link.next_icon_blue {
+  border-color: #5b7a9e;
+  background-color: #6a8fb8;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6a8fb8), to(#486688));
+  background: -moz-linear-gradient(100% 0% 270deg,#6a8fb8, #486688);
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+}
+footer.feedback_form a.button_link.next_icon_blue span {
+  line-height: 20px;
+}
+footer.feedback_form a.button_link.next_icon_blue:hover {
+  border-color: #4c637d;
+  background-color: #5a7492;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5a7492), to(#3a5068));
+  background: -moz-linear-gradient(100% 0% 270deg,#5a7492, #3a5068);
+}
+/* LABS PAGE STYLING STARTS HERE */
+#content.labs_content {
+  padding: 0 0 63px 0;
+}
+.labs_content section {
+  padding: 44px 0 40px 0;
+  margin: 0 30px;
+  min-width: 904px;
+  overflow: hidden;
+  border-bottom: 1px dotted #6c6c6c;
+}
+.labs_content section:last-child {
+  border-bottom: none;
+}
+.labs_content aside {
+  float: left;
+  max-width: 450px;
+  width: 25%;
+  margin-right: 36px;
+}
+.labs_content h2 {
+  font-size: 24px;
+  font-weight: normal;
+  color: #3c3c3c;
+  padding-bottom: 10px;
+}
+.labs_content h2 span {
+  color: #a0a0a0;
+}
+.labs_content h2 a {
+  text-decoration: none;
+  color: #5ab309;
+}
+.labs_content h2 a:hover {
+  color: #366B07;
+}
+.labs_content p {
+  font-size: 14px;
+  line-height: 1.6em;
+  padding-top: 10px;
+}
+.labs_content section a.button_link.next_icon_green, .labs_content section a.button_link.next_icon_blue, .modal_content a.button_link.next_icon_green, #content.webapp article #webapp_tab_display div.webapp_messaging_inner a.button_link.next_icon_green {
+  border-color: #519f0b;
+  background-color: #5ab309;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5ab309), to(#458907));
+  background: -moz-linear-gradient(100% 0% 270deg,#5ab309, #458907);
+  -moz-border-radius: 22px;
+  -webkit-border-radius: 22px;
+  font-size: 14px;
+  text-decoration: none;
+  color: #fff;
+  border-width: 3px;
+  border-style: solid;
+}
+#content.webapp article #webapp_tab_display div.webapp_messaging_inner a.button_link {
+  margin: 15px 0 3px 0;
+}
+.labs_content section a.button_link.next_icon_blue {
+  border-color: #0663ba;
+  background-color: #0072dc;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#0072dc), to(#0057a9));
+  background: -moz-linear-gradient(100% 0% 270deg,#0072dc, #0057a9);
+}
+.labs_content section a.button_link.next_icon_green span, .labs_content section a.button_link.next_icon_blue span, .modal_content a.button_link.next_icon_green span, #content.webapp article #webapp_tab_display div.webapp_messaging_inner a.button_link.next_icon_green span {
+  line-height: 22px;
+  background-image: url(../images/tablet_arrow_green_large.png);
+}
+.labs_content section a.button_link.next_icon_blue span {
+  background-image: url(../images/tablet_arrow_blue_large.png);
+}
+.labs_content section a.button_link.next_icon_green:hover, .modal_content a.button_link.next_icon_green:hover, #content.webapp article #webapp_tab_display div.webapp_messaging_inner a.button_link.next_icon_green:hover {
+  color: #fff;
+  border-color: #3f7310;
+  background-color: #4b8913;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4b8913), to(#3a690f));
+  background: -moz-linear-gradient(100% 0% 270deg,#4b8913, #3a690f);
+}
+.labs_content section a.button_link.next_icon_blue:hover {
+  color: #fff;
+  border-color: #04427c;
+  background-color: #054f93;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#054f93), to(#043d71));
+  background: -moz-linear-gradient(100% 0% 270deg,#054f93, #043d71);
+}
+.labs_content ul.provider_icons {
+  list-style-type: none;
+  font-size: 12px;
+  border-top: 1px solid #cecece;
+  border-bottom: 1px solid #cecece;
+  margin: 15px 0 10px 0;
+  padding: 20px 0 2px 0;
+}
+.labs_content ul.provider_icons a {
+  text-decoration: underline;
+  color: #ff4300;
+  font-weight: bold;
+}
+.labs_content ul.provider_icons a:hover {
+  color: #43617e;
+}
+.labs_content ul.provider_icons li {
+  margin-bottom: 18px;
+  padding: 1px 40px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  display: block;
+  height: 35px;
+}
+.labs_content ul.provider_icons li.linkedin_icon {
+  background-image: url(../images/icon_linkedin_v1_large.png);
+}
+.labs_content ul.provider_icons li.etsy_icon {
+  background-image: url(../images/icon_etsy_v1_large.png);
+}
+.labs_content section.page_header {
+  background-color: #faf8d2;
+  font-size: 14px;
+  color: #3c3c3c;
+  padding: 20px 30px;
+  border-bottom: 1px solid #c1c1c1;
+  margin: 0;
+}
+.labs_content .page_header h1 {
+  float: left;
+  display: block;
+  font-size: 30px;
+  margin-top: 4px;
+}
+.labs_content h1.labs_icon {
+  background: transparent url(../images/labs_icon.png) no-repeat 0 50%;
+  padding-left: 37px;
+}
+.labs_content .page_header p {
+  margin-left: 250px;
+  line-height: 1.5em;
+  max-width: 800px;
+  padding: 0;
+}
+.labs_content .page_header a {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #ff4300;
+}
+.labs_content .page_header a:hover {
+  color: #43617e;
+}
+/* LABS CONTENT ENDS HERE */
+ 
+/* HOWTO CONTENT STARTS HERE */
+#content.howto_content {
+  padding: 0 0 63px 0;
+}
+.howto_content section {
+  margin: 0 30px;
+  padding: 30px 0 0 0;
+  border-bottom: 1px solid #c1c1c1;
+  font-size: 15px;
+  color: #3c3c3c;
+  line-height: 1.5em;
+}
+.howto_content section:last-child {
+  border-bottom: none;
+}
+.howto_content section ul, .howto_content section ol {
+  margin-left: 1.4em;
+  padding-left: 30px;
+  font-size: 13px;
+  padding-bottom: 30px;
+}
+.howto_content section a:link, .howto_content section a:visited {
+  color: #0072dc;
+}
+.howto_content section h1 {
+  font-size: 30px;
+  color: #000;
+  font-weight: normal;
+  padding-bottom: 28px;
+}
+.howto_content section h2 {
+  font-size: 18px;
+  padding-bottom: 3px;
+}
+.howto_content section h2 span {
+  color: #ff4300;
+}
+.howto_content section h4 {
+  font-weight: bold;
+  font-size: 15px;
+  padding-bottom: 5px;
+}
+.howto_content section a {
+  font-weight: bold;
+}
+.howto_content section p {
+  padding-bottom: 30px;
+  max-width: 780px;
+}
+.howto_content section p.console {
+  background-color: #f3f3f3;
+  border: 1px solid #e7e7e7;
+  padding: 10px;
+  font-size: 14px;
+  font-family: monospace;
+  color: #000;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  margin-bottom: 30px;
+}
+.howto_content section p.note {
+  font-size: 13px;
+  padding-bottom: 0;
+}
+.howto_content section span.appname {
+  background-color: #d8e2ed;
+}
+.howto_content section span.smartkey {
+  background-color: #ccc;
+}
+.howto_content section span.token, .howto_content section span.username {
+  background-color: #faf8d2;
+}
+.howto_content section span.secret, .howto_content section span.password {
+  background-color: #d5fad2;
+}
+/* HOWTO CONTENT ENDS HERE */
+</style>
+
+  </head>
+  <body>
+    <div id="container">
+      <section id="content" class="howto_content">
+        <section>
+          <h1>Source Setup Instructions</h1>
+        	<h2><span>Step 1:</span> Create an application</h2>
+        	<p>
+        		An application is a collection of one or more APIs that are accessed by an application. You already have an account, so let's start by setting up your first app.
+        	</p>
+        	<h4>Type:</h4>
+        	<p class="console">
+        		create app <span class="appname">yourappname</span>
+        	</p>
+        </section>
+        <section>
+        	<h2><span>Step 2:</span> Add an API provider to this application</h2>
+        	<p>
+        		Now that you've created an application, you'll use an Apigee SmartKey to store and manage your application credentials. Your SmartKey will make it easy to sign API calls for Twitter in your application.
+        	</p>
+        	<p>
+        		<em>Apigee Source only supports the Twitter API, so this is the API you'll be adding.</em>
+        	</p>
+        	<h4>Type:</h4>
+        	<p class="console">
+        		<span class="appname">yourappname</span> add provider twitter
+        	</p>
+        </section>
+        <section>
+        	<h2><span>Step 3:</span> Add Twitter consumer key and secret to your application</h2>
+        	<p>
+        		Now that you've added Twitter to your application, you need to sign in to dev.twitter.com, register an application, set it up, and retrieve your consumer key and secret.
+        	</p>
+        	<h4>When you have retrieved your consumer key and secret, type:</h4>
+        	<p class="console">
+        		<span class="appname">yourappname</span> configure twitter <span class="token">key</span> <span class="secret">secret</span>
+        	</p>
+        	<p class="note">
+        		<strong>Note:</strong> In order to retrieve your Twitter consumer key and consumer secret, you'll need to:
+        	</p>
+        	<ol>
+				<li>Sign in to <a href="https://dev.twitter.com/apps" title="dev.twitter.com" target="_blank">dev.twitter.com</a> (opens in a new window)</li>
+				<li>Create a new application</li>
+				<li>Give it a name</li>
+				<li>Give it a description</li>
+				<li>Add a web site (any URL will do to get up and running)</li>
+				<li>Set the callback url to be: <em>https://<span class="appname">yourappname</span>-api.apigee.com/authcallback/twitter</em></li>
+				<li>Agree to the terms</li>
+				<li>Prove that you're human with the CAPTCHA</li>
+				<li>Click the "create your Twitter application" button, and you'll be taken to the Details page for your newly-created application</li>
+				<li>Under "OAuth Settings" you'll see your Consumer Key and Consumer Secret. You'll need these to make your next comamnd in the setup CLI</li>
+				<li>The default access level is read-only. If you want to have write access, you'll need to click on the "settings" tab and change it.</li>
+				<li>Once you've registered, go to settings and you'll see your Consumer Token and Secret.</li>
+        	</ol>
+        </section>
+        <section>
+        	<h2><span>Step 4:</span> Add a User</h2>
+        	<p>
+        		In order to validate that you can make an API request with your Source application, you'll want to create a user and associate it with a Twitter account.
+        	</p>
+        	<p>
+        		A user needs a unique username (email address ok) and password. These will be mapped to a SmartKey. 
+        	</p>
+        	<p>
+        		You'll use a SmartKey to authorize all API calls on behalf of a user. 
+        	</p>
+        	<h4>Type:</h4>
+        	<p class="console">
+        		<span class="appname">yourappname</span> add user <span class="username">username</span> <span class="password">password</span>
+        	</p>
+        	<p>
+        		Follow the link to begin the OAuth dance.
+        	</p>
+        </section>
+        <section>
+        	<h2><span>Step 5:</span> Make an authenticated request to the Twitter API</h2>
+        	<p>
+        		Now that your SmartKey has stored the Twitter credentials for this end-user, you can make an authenticated request to validate that your source application is up and running.
+        	<h4>Type:</h4>
+        	<p class="console">
+        		<span class="appname">yourappname</span> get /twitter/1/statuses/home_timeline.json?smartkey=<span class="smartkey">smartkey</span>
+        	</p>
+        	<h2>Go forth and applicate!</h2>
+        	<p>Now that you know how to make a request using Apigee Source: </p>
+        	<ol>
+        		<li><a title="&el; or fork the repo" target="_blank" href="https://github.com/apigee/Apigee-Source-for-JavaScript">Download the library from Github</a></li>
+        		<li>Paste your endpoint into the sample application</li>
+        		<li>Host your sample application</li>
+        		<li>Log in using the end user you created above, or register as a new end user of the sample application (if you choose the latter, you'll also have to grant permission with Twitter)</li>
+        		<li>See the Source app working!</li>
+        	</ol>
+        </section>
+      </section>
+    </div><!-- /container -->
+  </body>
+</html>

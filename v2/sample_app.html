@@ -33,6 +33,9 @@
         padding: 34px 0;
         display: block;
       }
+      #render_template_holder article.noshow {
+        display: none;
+      }
       #render_template_holder article h2, #render_template_holder article .text {
         text-transform: capitalize;
       }
@@ -79,7 +82,7 @@
       <h1>Home Timeline</h1>
     </header>
     <section id="render_template_holder">
-      <article>
+      <article class="noshow">
         <img src="{{user.profile_image_url}}" alt="{{user.name}}" /><h2>{{user.name}}</h2><p class="text">{{text}} - <a class="timestamp" href="https://twitter.com/#!/{{user.name}}/status/{{id_str}}" target="_blank" title="view on web">{{created_at | date '\at DD-MM-YYYY HH:mm'}}</a></p>
       </article>
     </section>
@@ -105,6 +108,7 @@
       function renderData(data) {
         var responsePayload = $.parseJSON(hometimeline.returnObject.payload);
         Tempo.prepare('render_template_holder').render(responsePayload);
+        $('#render_template_holder').find('article').removeClass('noshow');
       }
     </script>
   </body>

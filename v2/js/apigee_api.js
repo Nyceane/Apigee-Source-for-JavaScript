@@ -82,42 +82,74 @@
         request = fullRequest[0];
         if (fullRequest.length > 1) settings.type = fullRequest[1];
         if (settings.type === 'jsonp') settings.type = 'json';
-        var requestData = (settings.verb === 'get') ? null : JSON.stringify(headers);
-        var requestType = (settings.verb === 'get') ? null : "application/"+settings.type;
-        var requestDataType = (settings.verb === 'get') ? null : settings.type;
         if (settings.popnewwin && (settings.popnewwin === 'true')) window.open(settings.endpoint+request+'.'+settings.type.split(" ")[0]);
-        $.ajax({
-          url: settings.endpoint+request+'.'+settings.type.split(" ")[0],
-          headers: headers,
-          data: requestData,
-          type: settings.verb,
-          dataType: requestDataType,
-          contentType: requestType,
-          xhrFields: {
-            withCredentials: true
-          },
-          success: function(data,textStatus,jqXHR) {
-            returnObject.response_message = textStatus;
-            returnObject.payload = data;
-            returnObject.xhr = jqXHR;
-            theApi.returnObject = returnObject;
-            if (settings.callback) {
-              var textData = ((typeof data) != 'string') ? JSON.stringify(data) : data;
-              var callbackFunction = new Function(settings.callback+'(\''+textData.replace(/'/g, "\\'")+'\')');
-              callbackFunction();
-            }     
-            $.after_request();
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            responseMessage = textStatus+" ("+errorThrown+")";
-            returnObject.response_message = responseMessage;
-            returnObject.xhr = jqXHR;
-            try {
-              showResponseMessage('Sorry, that didn’t work. Please <a href="#" title="instructions">check the instructions</a> and try again.');
-            } catch (e) {}
-            $.after_request();
-          }
-        });
+        if (settings.verb === 'get') {
+          $.ajax({
+            url: settings.endpoint+request+'.'+settings.type.split(" ")[0],
+            type: settings.verb,
+            xhrFields: {
+              withCredentials: true
+            },
+            success: function(data,textStatus,jqXHR) {
+              returnObject.response_message = textStatus;
+              returnObject.payload = data;
+              returnObject.xhr = jqXHR;
+              theApi.returnObject = returnObject;
+              if (settings.callback) {
+                var textData = ((typeof data) != 'string') ? JSON.stringify(data) : data;
+                var callbackFunction = new Function(settings.callback+'(\''+textData.replace(/'/g, "\\'")+'\')');
+                callbackFunction();
+              }     
+              $.after_request();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              responseMessage = textStatus+" ("+errorThrown+")";
+              returnObject.response_message = responseMessage;
+              returnObject.xhr = jqXHR;
+              try {
+                showResponseMessage('Sorry, that didn’t work. Please <a href="#" title="instructions">check the instructions</a> and try again.');
+              } catch (e) {}
+              $.after_request();
+            }
+          });
+        } else {
+          $.ajax({
+            url: settings.endpoint+request+'.'+settings.type.split(" ")[0],
+            headers: headers,
+            data: JSON.stringify(headers),
+            type: settings.verb,
+            dataType: settings.type,
+            contentType: "application/"+settings.type,
+            xhrFields: {
+              withCredentials: true
+            },
+            success: function(data,textStatus,jqXHR) {
+              returnObject.response_message = textStatus;
+              returnObject.payload = data;
+              returnObject.xhr = jqXHR;
+              theApi.returnObject = returnObject;
+              console.log('success');
+              if (settings.callback) {
+                var textData = ((typeof data) != 'string') ? JSON.stringify(data) : data;
+                var callbackFunction = new Function(settings.callback+'(\''+textData.replace(/'/g, "\\'")+'\')');
+                callbackFunction();
+              }     
+              $.after_request();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              responseMessage = textStatus+" ("+errorThrown+")";
+              returnObject.response_message = responseMessage;
+              returnObject.xhr = jqXHR;
+              console.log('status: '+textStatus+' error:'+errorThrown);
+              console.log(errorThrown);
+              try {
+                showResponseMessage('Sorry, that didn’t work. Please <a href="#" title="instructions">check the instructions</a> and try again.');
+              } catch (e) {}
+              $.after_request();
+            }
+          });
+        }
+        console.log(returnObject);
         return returnObject;
       }
     }

@@ -96,20 +96,18 @@
     <script src="./js/apigee_api.js"></script>
     <script src="./js/tempo.min.js"></script>
     <script type="text/javascript">
-      var hometimeline = $.apigee_api('https://marshtimeline-api.apigee.com');
-/*
-      var userinfo = prompt('Please enter your Apigee credentials, separated by a space.').split(' ');
-      if (userinfo.length == 2) {
-        hometimeline.init(userinfo[0],userinfo[1]);
-        hometimeline.request('get','/v1/smartkeys/me.json?uid='+hometimeline.authorization,{},{callback:'getTimeline'});
-      }
-*/
-      hometimeline.request('get','/v1/smartkeys/me.json',{},{callback:'getTimeline'});
+      var appname = "marshtimeline";
+    
+      var twitter = $.apigee_api('https://'+appname+'-api.apigee.com');
+
+      twitter.request('get','/v1/smartkeys/me.json',{},{callback:'getTimeline'});
+      
       function getTimeline(data) {
-        hometimeline.request('get','/v1/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
+        twitter.request('get','/v1/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
       }
+      
       function renderData(data) {
-        var responsePayload = $.parseJSON(hometimeline.returnObject.payload);
+        var responsePayload = $.parseJSON(twitter.returnObject.payload);
         Tempo.prepare('render_template_holder').render(responsePayload);
         $('#render_template_holder').find('article').removeClass('noshow');
       }

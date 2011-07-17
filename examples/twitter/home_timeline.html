@@ -91,26 +91,30 @@
         Powered by <a href="http://apigee.com" title="apigee">Apigee</a>
       </p>
     </footer>
-    <script src="./js/jquery_min.js"></script>
-    <script src="./js/base64_min.js"></script>
-    <script src="./js/apigee_api.js"></script>
-    <script src="./js/tempo.min.js"></script>
-    <script type="text/javascript">
-      var appname = "marshtimeline";
-    
-      var twitter = $.apigee_api('https://'+appname+'-api.apigee.com');
 
-      twitter.request('get','/v1/smartkeys/me.json',{},{callback:'getTimeline'});
-      
-      function getTimeline(data) {
-        twitter.request('get','/v1/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
-      }
-      
-      function renderData(data) {
-        var responsePayload = $.parseJSON(twitter.returnObject.payload);
-        Tempo.prepare('render_template_holder').render(responsePayload);
-        $('#render_template_holder').find('article').removeClass('noshow');
-      }
-    </script>
-  </body>
+    <script src="https://apigee.com/cli/js/jquery_min.js"></script>
+    <script src="https://apigee.com/cli/js/base64_min.js"></script>
+
+    <script src="https://apigee.com/cli/js/apigee_api.js"></script>
+    <script src="https://raw.github.com/neilgupta/tempo/master/tempo.min.js"></script>
+    
+<script type="text/javascript">
+	var appname = 'marshtimeline';
+
+	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com');
+
+	// get the smartkey for the current user
+	twitter.request('get','/v1/smartkeys/me.json',{},{callback:'getTimeline'});
+
+	function getTimeline(data) {
+  		twitter.request('get','/v1/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
+	}
+
+	function renderData(data) {
+  		var responsePayload = $.parseJSON(twitter.returnObject.payload);
+  		Tempo.prepare('render_template_holder').render(responsePayload);
+  		$('#render_template_holder').find('article').removeClass('noshow');
+	}
+</script>
+</body>
 </html>

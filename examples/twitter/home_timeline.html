@@ -101,13 +101,13 @@
 <script type="text/javascript">
 	var appname = 'marshtimeline';
 
-	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com');
+	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
 
 	// get the smartkey for the current user
-	twitter.request('get','/v1/smartkeys/me.json',{},{callback:'getTimeline'});
+	twitter.request('get','/smartkeys/me.json',{},{callback:'getTimeline'});
 
 	function getTimeline(data) {
-  		twitter.request('get','/v1/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
+  		twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
 	}
 
 	function renderData(data) {

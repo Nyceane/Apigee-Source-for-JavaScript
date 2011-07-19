@@ -101,7 +101,7 @@
 <script type="text/javascript">
 	var appname = 'marshtimeline';
 
-	var twitter = $.apigee_api('https://mtl.apigee.com/v1');
+	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
 
 	// get the smartkey for the current user
 	twitter.request('get','/smartkeys/me.json',{},{callback:'getTimeline'});

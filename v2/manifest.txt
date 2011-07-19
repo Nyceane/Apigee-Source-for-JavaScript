@@ -8,4 +8,4 @@ v2/js/cli_layer.js
 v2/js/html5shiv.js
 v2/js/jquery_min.js
 v2/css/main.css
-v2/css/sample.html
+v2/sample.html

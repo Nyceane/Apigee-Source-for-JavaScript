@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample Application - Home Timeline</title>
+    <style>
+      * { margin: 0; padding: 0; }
+      :focus { outline: 0; }
+      html {  }
+      body { background-color: #fff; color: #3c3c3c; font-family: helvetica, arial, sans-serif; font-size: 13px; }
+      ul { list-style-type: none; }
+      p {  }
+      a { outline: none; }
+      a img { border: none; }
+      section, article, header, footer, nav, aside, hgroup { display: block; }
+      header {
+        background-color: #000;
+        padding: 0 20px;
+        border-bottom: 1px solid #3c3c3c;
+      }
+      header h1 {
+        font-size: 20px;
+        color: #fff;
+        line-height: 1.5em;
+        font-weight: normal;
+        letter-spacing: -1px;
+      }
+      #render_template_holder {
+        padding: 5px 25px;
+      }
+      #render_template_holder article {
+        border-bottom: 1px solid #666;
+        padding: 34px 0;
+        display: block;
+      }
+      #render_template_holder article.noshow {
+        display: none;
+      }
+      #render_template_holder article h2, #render_template_holder article .text {
+        text-transform: capitalize;
+      }
+      #render_template_holder article h2, #render_template_holder article p {
+        margin-left: 64px;
+      }
+      #render_template_holder article img {
+        height: 48px;
+        width: 48px;
+        float: left;
+      }
+      #render_template_holder article p {
+        line-height: 1.5em;
+      }
+      #render_template_holder article a.timestamp {
+        color: #b2b2b2;
+        text-decoration: underline;
+      }
+      #render_template_holder article a.timestamp:hover {
+        color: #999;
+      }
+      footer {
+        background-color: #000;
+        border-top: 1px solid #3c3c3c;
+        padding: 0 20px;
+      }
+      footer p {
+        text-align: right;
+        color: #fff;
+        line-height: 3em;
+        font-size: 10px;
+      }
+      footer p a:link, footer p a:visited {
+        color: #ff4300;
+        text-decoration: none;
+      }
+      footer p a:hover {
+        color: #0072dc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Home Timeline</h1>
+    </header>
+    <section id="render_template_holder">
+      <article class="noshow">
+        <img src="{{user.profile_image_url}}" alt="{{user.name}}" /><h2>{{user.name}}</h2><p class="text">{{text}} - <a class="timestamp" href="https://twitter.com/#!/{{user.name}}/status/{{id_str}}" target="_blank" title="view on web">{{created_at | date '\at DD-MM-YYYY HH:mm'}}</a></p>
+      </article>
+    </section>
+    <footer>
+      <p>
+        Powered by <a href="http://apigee.com" title="apigee">Apigee</a>
+      </p>
+    </footer>
+
+    <script src="https://apigee.com/cli/js/jquery_min.js"></script>
+    <script src="https://apigee.com/cli/js/base64_min.js"></script>
+
+    <script src="https://apigee.com/cli/js/apigee_api.js"></script>
+    <script src="https://raw.github.com/neilgupta/tempo/master/tempo.min.js"></script>
+    
+<script type="text/javascript">
+	var appname = 'marshtimeline';
+
+	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
+
+	// get the smartkey for the current user
+	twitter.request('get','/smartkeys/me.json',{},{callback:'getTimeline'});
+
+	function getTimeline(data) {
+  		twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
+	}
+
+	function renderData(data) {
+  		var responsePayload = $.parseJSON(twitter.returnObject.payload);
+  		Tempo.prepare('render_template_holder').render(responsePayload);
+  		$('#render_template_holder').find('article').removeClass('noshow');
+	}
+</script>
+</body>
+</html>

@@ -86,9 +86,13 @@
         if (settings.verb === 'get') {
           $.ajax({
             url: settings.endpoint+request+'.'+settings.type.split(" ")[0],
-            type: settings.verb,
+            type: 'get',
+            dataType: 'text',
             xhrFields: {
               withCredentials: true
+            },
+            beforeSend: function(xhr) {
+              if (theApi.authorization && headers.Authorization) xhr.setRequestHeader('Authorization',headers.Authorization);
             },
             success: function(data,textStatus,jqXHR) {
               returnObject.response_message = textStatus;
@@ -149,7 +153,6 @@
             }
           });
         }
-        console.log(returnObject);
         return returnObject;
       }
     }
@@ -165,6 +168,13 @@
     }
     this.doesLocalStorage = this.checkLocalStorage();
 /**
+  * set theApi's smartkey, and, if supported, add smartkey to local storage
+*/
+    this.setSmartKey = function(theSmartKey) {
+      theApi.smartkey = theSmartKey;
+      if (theApi.doesLocalStorage) localStorage.smartkey = theApi.smartkey;
+    }
+/**
   * base64-encodes username and password, adds this to the ApigeeAPI object, which in turn adds it as a header to each subsequent request
 */
     this.init = function(username,password) {
@@ -179,7 +189,7 @@
     } else if (uid) {
       theApi.authorization = uid;
     } else if (this.doesLocalStorage && localStorage.smartkey) {
-      theApi.smartkey = localStorage.smartkey;
+      theApi.setSmartKey(localStorage.smartkey);
     }
   }  
   

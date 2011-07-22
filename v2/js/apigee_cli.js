@@ -132,7 +132,6 @@ function ApigeeApp(appName,requestParams) {
     if ($.isArray(requestParams)) {
       theApp.api.request(verb,requestParams,{},{'endpoint':'https://'+theApp.appName+'-api.apigee.com/v1','callback':'cliApps["'+theApp.appName+'"].'+verb});
     } else {
-      //var requestParams = parseAndReturn(requestParams);
       cliApps[theApp.appName].requestParams = requestParams;
       showResponseMessage('Congrats, you\'ve made an authenticated call!<br /><a href="#" title="full response" onClick="var newWin = window.open(null,\'Source Response\'); newWin.document.body.innerHTML = cliApps.'+theApp.appName+'.requestParams; return false;">Open full response in new window</a><br /><span>[<strong>Source Setup Complete!</strong>]</span><br /><br /><a href="https://github.com/apigee/Apigee-Source-for-JavaScript/tree/gh-pages/v2" title="download" target="_blank">Download the code library</a> and paste your endpoint into the sample app source code: https://'+theApp.appName+'-api.apigee.com<br />Upload the sample app to the web server of your choice and off you go!<br />Thank you for getting your app started with Apigee Source.  Please send feedback to <a href="mailto:feedback@apigee.com?subject=Source Labs Feedback" title="send feedback">feedback@apigee.com</a>'); 
     }

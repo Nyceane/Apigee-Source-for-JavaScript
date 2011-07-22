@@ -33,6 +33,9 @@
         padding: 34px 0;
         display: block;
       }
+      #render_template_holder article:last-child {
+        border-bottom: none;
+      }
       #render_template_holder article.noshow {
         display: none;
       }
@@ -94,27 +97,34 @@
 
     <script src="https://apigee.com/cli/js/jquery_min.js"></script>
     <script src="https://apigee.com/cli/js/base64_min.js"></script>
-
     <script src="https://apigee.com/cli/js/apigee_api.js"></script>
     <script src="https://raw.github.com/neilgupta/tempo/master/tempo.min.js"></script>
+    <script type="text/javascript">
+    	var appname = 'marshtimeline'; //add your appname here
+    	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
+    	
+    	function startTimeline() {
+      		var userinfo = prompt('Please enter your Apigee credentials, separated by a space.').split(' ');
+       		if (userinfo.length == 2) {
+          		twitter.init(userinfo[0],userinfo[1]);
+          		twitter.request('get','/smartkeys/me.json?uid='+twitter.authorization,{},{callback:'getTimeline'});
+        	}
+      	}
     
-<script type="text/javascript">
-	var appname = 'marshtimeline';
-
-	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
-
-	// get the smartkey for the current user
-	twitter.request('get','/smartkeys/me.json',{},{callback:'getTimeline'});
-
-	function getTimeline(data) {
-  		twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+data,{},{callback:'renderData'});
-	}
-
-	function renderData(data) {
-  		var responsePayload = $.parseJSON(twitter.returnObject.payload);
-  		Tempo.prepare('render_template_holder').render(responsePayload);
-  		$('#render_template_holder').find('article').removeClass('noshow');
-	}
-</script>
-</body>
+    	function getTimeline(data) {
+        	var dataObject = $.parseJSON(data);
+        	if (dataObject.smartKey) twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+dataObject.smartKey,{},{callback:'renderData'});
+    	}
+    
+    	function renderData(data) {
+        	var responsePayload = ((typeof twitter.returnObject.payload) === "string") ? $.parseJSON(twitter.returnObject.payload) : twitter.returnObject.payload;
+    		Tempo.prepare('render_template_holder').render(responsePayload);
+    		$('#render_template_holder').find('article').removeClass('noshow');
+    	}
+    	
+    	$(document).ready(function() {
+        	startTimeline();
+    	});
+    </script>
+  </body>
 </html>

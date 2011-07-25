@@ -63,10 +63,13 @@
       footer {
         background-color: #000;
         border-top: 1px solid #3c3c3c;
-        padding: 0 20px;
+        position:fixed;
+        bottom: 0;
+        width: 100%;
       }
       footer p {
         text-align: right;
+        padding: 0 20px;
         color: #fff;
         line-height: 3em;
         font-size: 10px;
@@ -104,26 +107,26 @@
     	var twitter = $.apigee_api('https://'+appname+'-api.apigee.com/v1');
     	
     	function startTimeline() {
-      		var userinfo = prompt('Please enter your Apigee credentials, separated by a space.').split(' ');
-       		if (userinfo.length == 2) {
-          		twitter.init(userinfo[0],userinfo[1]);
-          		twitter.request('get','/smartkeys/me.json?uid='+twitter.authorization,{},{callback:'getTimeline'});
-        	}
-      	}
+      	var userinfo = prompt('Please enter your Apigee credentials, separated by a space.').split(' ');
+        if (userinfo.length == 2) {
+          twitter.init(userinfo[0],userinfo[1]);
+          twitter.request('get','/smartkeys/me.json?uid='+twitter.authorization,{},{callback:'getTimeline'});
+        }
+      }
     
     	function getTimeline(data) {
-        	var dataObject = $.parseJSON(data);
-        	if (dataObject.smartKey) twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+dataObject.smartKey,{},{callback:'renderData'});
+        var dataObject = $.parseJSON(data);
+        if (dataObject.smartKey) twitter.request('get','/twitter/1/statuses/home_timeline.json?smartkey='+dataObject.smartKey,{},{callback:'renderData'});
     	}
     
     	function renderData(data) {
-        	var responsePayload = ((typeof twitter.returnObject.payload) === "string") ? $.parseJSON(twitter.returnObject.payload) : twitter.returnObject.payload;
+        var responsePayload = ((typeof twitter.returnObject.payload) === "string") ? $.parseJSON(twitter.returnObject.payload) : twitter.returnObject.payload;
     		Tempo.prepare('render_template_holder').render(responsePayload);
     		$('#render_template_holder').find('article').removeClass('noshow');
     	}
     	
     	$(document).ready(function() {
-        	startTimeline();
+        startTimeline();
     	});
     </script>
   </body>

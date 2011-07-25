@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample Application - Home Timeline</title>
+    <style>
+      * { margin: 0; padding: 0; }
+      :focus { outline: 0; }
+      html {  }
+      body { background-color: #fff; color: #3c3c3c; font-family: helvetica, arial, sans-serif; font-size: 13px; }
+      ul { list-style-type: none; }
+      p {  }
+      a { outline: none; }
+      a img { border: none; }
+      section, article, header, footer, nav, aside, hgroup { display: block; }
+      .noshow {
+        display: none !important;
+      }
+      header {
+        background-color: #000;
+        font-size: 11px;
+        padding: 0 20px;
+        line-height: 32px;
+        border-bottom: 1px solid #3c3c3c;
+        color: #fff;
+      }
+      header h1 {
+        font-size: 20px;
+        line-height: 32px;
+        font-weight: normal;
+        letter-spacing: -1px;
+      }
+      header form {
+        float: right;
+        padding-top: 1px;
+      }
+      header label {
+        padding: 0 5px 0 0;
+      }
+      header button {
+        font-size: 11px;
+        line-height: 22px;
+        padding: 0 5px;
+      }
+      #render_template_holder {
+        padding: 5px 25px;
+      }
+      #render_template_holder article {
+        border-bottom: 1px solid #666;
+        padding: 34px 0;
+        display: block;
+      }
+      #render_template_holder article:last-child {
+        border-bottom: none;
+      }
+      #render_template_holder article h2, #render_template_holder article .text {
+        text-transform: capitalize;
+      }
+      #render_template_holder article h2, #render_template_holder article p {
+        margin-left: 64px;
+      }
+      #render_template_holder article img {
+        height: 48px;
+        width: 48px;
+        float: left;
+      }
+      #render_template_holder article p {
+        line-height: 1.5em;
+      }
+      #render_template_holder article a.timestamp {
+        color: #b2b2b2;
+        text-decoration: underline;
+      }
+      #render_template_holder article a.timestamp:hover {
+        color: #999;
+      }
+      footer {
+        background-color: #000;
+        border-top: 1px solid #3c3c3c;
+        position:fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      footer p {
+        text-align: right;
+        padding: 0 20px;
+        color: #fff;
+        line-height: 3em;
+        font-size: 10px;
+      }
+      footer p a:link, footer p a:visited {
+        color: #ff4300;
+        text-decoration: none;
+      }
+      footer p a:hover {
+        color: #0072dc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <form id="user_data" method="#" action="get">
+        <label for="logout_button" id="logout_button_label"></label>
+        <button type="button" id="login_out_button">Log In</button>
+        <button type="button" id="create_account_button">Create Account</button>
+      </form>
+      <h1>Home Timeline</h1>
+    </header>
+    <section id="render_template_holder">
+      <article class="noshow">
+        <img src="{{user.profile_image_url}}" alt="{{user.name}}" /><h2>{{user.name}}</h2><p class="text">{{text}} - <a class="timestamp" href="https://twitter.com/#!/{{user.name}}/status/{{id_str}}" target="_blank" title="view on web">{{created_at | date '\at DD-MM-YYYY HH:mm'}}</a></p>
+      </article>
+    </section>
+    <footer>
+      <p>
+        Powered by <a href="http://apigee.com" title="apigee">Apigee</a>
+      </p>
+    </footer>
+    <script src="https://apigee.com/cli/js/jquery_min.js"></script>
+    <script src="https://apigee.com/cli/js/base64_min.js"></script>
+    <script src="https://apigee.com/cli/js/apigee_api.js"></script>
+    <script src="https://raw.github.com/neilgupta/tempo/master/tempo.min.js"></script>
+    <script type="text/javascript">
+      var appName = 'marshtimeline';
+      var sampleRequest = ['get','/twitter/1/statuses/home_timeline.json'];
+      
+      var tempoContainer, sampleApp;
+      $(document).ready(function() {
+        tempoContainer = Tempo.prepare('render_template_holder');
+        sampleApp = new SampleApplication(appName);
+        $('#login_out_button').click(function() {
+          sampleApp.toggleLog();
+          return false;
+        });
+        $('#create_account_button').click(function() {
+          sampleApp.createAccount();
+          return false;
+        });
+      });
+      
+      function SampleApplication(appName) {
+        var theApp = this;
+        this.userObject = {};
+        this.user_authenticated = false;
+        
+        this.getAuth = function() {
+          if (theApp.api && (theApp.api.doesLocalStorage && localStorage.authorization)) theApp.logIn();
+        }
+        
+        this.processSmartKey = function(data) {
+          var data = $.parseJSON(data);
+          theApp.setAuth(data);
+          if (theApp.api) theApp.sendRequest(sampleRequest);
+        }
+        
+        this.setAuth = function(authObject) {
+          for (var key in authObject) {
+            if (authObject.hasOwnProperty(key)) {
+              theApp.userObject[key] = authObject[key];
+              if (theApp.api && theApp.api.doesLocalStorage) localStorage[key] = authObject[key]; 
+              if (key == 'smartKey') theApp.api.setSmartKey(authObject.smartKey);
+            }
+          }
+        }
+        
+        this.toggleLog = function() {
+          if (theApp.user_authenticated) {
+            theApp.logOut();
+          } else {
+            theApp.logIn();
+          }
+        }
+        
+        this.logIn = function() {
+          if (theApp.api) {
+            var userInfo = [];
+            if (theApp.api.doesLocalStorage && localStorage.authorization) {
+              userInfo = $.base64Decode(localStorage.authorization).split(':');
+            } else {
+              userInfo = prompt('Please enter your Apigee username and password, separated by a space.').split(' ');
+            }
+            if (userInfo.length == 2) {
+              theApp.setAuth({'username':userInfo[0],'password':userInfo[1],'authorization':$.base64Encode(userInfo[0]+':'+userInfo[1])});
+              theApp.api.init(userInfo[0],userInfo[1]);
+            }
+            if (theApp.api.doesLocalStorage && localStorage.smartkey) {
+              theApp.setAuth({'smartKey':localStorage.smartkey});
+            } else if (theApp.api.authorization) {
+              theApp.api.request('get','/smartkeys/me.json?uid='+theApp.api.authorization,{},{callback:'sampleApp.processSmartKey'});
+            }
+            if (theApp.userObject.username) $('#logout_button_label').html(theApp.userObject.username);
+            $('#login_out_button').html('Log Out');
+            $('#create_account_button').addClass('noshow');
+            theApp.user_authenticated = true;
+            if (theApp.api.smartkey) {
+              theApp.sendRequest(sampleRequest);
+            }
+          }
+        }
+        
+        this.logOut = function() {
+          var userCredentials = ['smartkey','username','password','authorization'];
+          for (var i=0; i<userCredentials.length; i++) {
+            var thisCredential = userCredentials[i];
+            if (theApp.api) {
+              if (theApp.api.doesLocalStorage) localStorage.removeItem(thisCredential);
+              if (theApp.api[thisCredential]) theApp.api[thisCredential] = null;
+              if (theApp.userObject[thisCredential]) theApp.userObject[thisCredential] = null;
+            }
+          }
+          tempoContainer.clear();
+          $('#logout_button_label').html('');
+          $('#login_out_button').html('Log In');
+          $('#create_account_button').removeClass('noshow');
+          theApp.user_authenticated = false;
+        }
+        
+        this.createAccount = function() {
+          var userInfo = prompt('Please enter the desired username and password, separated by a space.').split(' ');
+          if ((userInfo.length == 2) && (theApp.api)) {
+            if (theApp.api.doesLocalStorage) localStorage.authorization = $.base64Encode(userInfo[0]+':'+userInfo[1]);
+            theApp.api.request('post','/users.json',{'userName':userInfo[0],'fullName':userInfo[0],'password':userInfo[1]},{callback:'sampleApp.newAccount'});
+          }
+        }
+        
+        this.newAccount = function(data) {
+          var responsePayload = ((typeof theApp.api.returnObject.payload) === "string") ? $.parseJSON(theApp.api.returnObject.payload) : theApp.api.returnObject.payload;
+          if (responsePayload.hasOwnProperty('smartKey')) {
+            if (theApp.api.doesLocalStorage) localStorage.smartkey = responsePayload.smartKey;
+            var oauthWindow = window.open(theApp.api.defaults.endpoint+'/providers/twitter/authorize?smartkey='+responsePayload.smartKey+'&app_callback=https://apigee.com/oauthSuccess.jsp');
+            var currentHref = document.location.href;
+            document.location.href = theApp.api.defaults.endpoint+'/providers/twitter/authorize?smartkey='+responsePayload.smartKey+'&app_callback='+currentHref;
+          }
+        }
+        
+        this.sendRequest = function(theRequest) {
+          if (theApp.api) {
+            var smartKeyParam = (theApp.api.smartkey) ? '?smartkey='+theApp.api.smartkey : '';
+            theApp.api.request(theRequest[0],theRequest[1]+smartKeyParam,{},{callback:'sampleApp.renderData'});
+          }
+        }
+        
+        this.renderData = function(data) {
+          var responsePayload = ((typeof theApp.api.returnObject.payload) === "string") ? $.parseJSON(theApp.api.returnObject.payload) : theApp.api.returnObject.payload;
+      		tempoContainer.render(responsePayload);
+      		$('#render_template_holder').find('article').removeClass('noshow');
+      	}
+      	
+      	this.init = function(appName) {
+          theApp.api = $.apigee_api('https://'+appName+'-api.apigee.com/v1');
+          theApp.appName = appName;
+          theApp.getAuth();
+        }
+        if (appName) theApp.init(appName);
+      }
+      
+    </script>
+  </body>
+</html>

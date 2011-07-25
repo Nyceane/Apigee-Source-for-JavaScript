@@ -132,7 +132,6 @@
               returnObject.payload = data;
               returnObject.xhr = jqXHR;
               theApi.returnObject = returnObject;
-              console.log('success');
               if (settings.callback) {
                 var textData = ((typeof data) != 'string') ? JSON.stringify(data) : data;
                 var callbackFunction = new Function(settings.callback+'(\''+textData.replace(/'/g, "\\'")+'\')');
@@ -144,8 +143,7 @@
               responseMessage = textStatus+" ("+errorThrown+")";
               returnObject.response_message = responseMessage;
               returnObject.xhr = jqXHR;
-              console.log('status: '+textStatus+' error:'+errorThrown);
-              console.log(errorThrown);
+              theApi.returnObject = returnObject;
               try {
                 showResponseMessage('Sorry, that didn’t work. Please <a href="#" title="instructions">check the instructions</a> and try again.');
               } catch (e) {}

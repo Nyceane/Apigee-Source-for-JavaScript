@@ -73,7 +73,6 @@ function ApigeeApp(appName,requestParams) {
       showResponseMessage('<span>[<strong>'+appName+' deleted</strong>]</span>');
       if (cliApps[appName]) cliApps[appName] = null;
     } else {
-      console.log('running delete');
       theApp.api.request('delete','apps/'+theApp.appName,{},{'callback':'cliApps["'+theApp.appName+'"].deleteapp'});
     }
   }

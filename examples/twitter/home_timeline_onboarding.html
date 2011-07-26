@@ -116,10 +116,16 @@
         Powered by <a href="http://apigee.com" title="apigee">Apigee</a>
       </p>
     </footer>
+<!--
     <script src="https://apigee.com/cli/js/jquery_min.js"></script>
     <script src="https://apigee.com/cli/js/base64_min.js"></script>
     <script src="https://apigee.com/cli/js/apigee_api.js"></script>
     <script src="https://raw.github.com/neilgupta/tempo/master/tempo.min.js"></script>
+-->
+    <script src="./js/jquery_min.js"></script>
+    <script src="./js/base64_min.js"></script>
+    <script src="./js/apigee_api.js"></script>
+    <script src="./js/tempo.min.js"></script>
     <script type="text/javascript">
       var appName = 'marshtimeline';
       var sampleRequest = ['get','/twitter/1/statuses/home_timeline.json'];
@@ -227,7 +233,6 @@
           var responsePayload = ((typeof theApp.api.returnObject.payload) === "string") ? $.parseJSON(theApp.api.returnObject.payload) : theApp.api.returnObject.payload;
           if (responsePayload.hasOwnProperty('smartKey')) {
             if (theApp.api.doesLocalStorage) localStorage.smartkey = responsePayload.smartKey;
-            var oauthWindow = window.open(theApp.api.defaults.endpoint+'/providers/twitter/authorize?smartkey='+responsePayload.smartKey+'&app_callback=https://apigee.com/oauthSuccess.jsp');
             var currentHref = document.location.href;
             document.location.href = theApp.api.defaults.endpoint+'/providers/twitter/authorize?smartkey='+responsePayload.smartKey+'&app_callback='+currentHref;
           }

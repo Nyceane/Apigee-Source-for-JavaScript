@@ -39,7 +39,7 @@ function configureApp(consumerKey,consumerSecret) {
 function appCreated(data) {
   var data = parseAndReturn(data);
   $("#form_step_2").removeClass("disabled");
-  if (data.hasOwnProperty("endpoint")) $("#callback_url").text(data.endpoint);
+  if (data.hasOwnProperty("endpoint")) $("#callback_url").text(data.endpoint+'/authcallback/twitter');
   $("#set_endpoint").addClass("disabled");
   $("#set_endpoint").click(function() { return false; });
 }

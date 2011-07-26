@@ -1,0 +1,153 @@
+/* 
+    AUTHOR: Dieter Randolph
+*/
+
+/* ------------------------------------------ */
+/* RESETS, BASIC PAGE SETUP, BASIC TYPOGRAPHY */
+/* ------------------------------------------ */
+* { margin: 0; padding: 0; }
+:focus { outline: 0; }
+html {  }
+body { 
+  font: 12px arial, helvetica, garuda, sans-serif;
+  color: #3c3c3c;
+  background-color: #fff;
+}
+ul, ol {
+  padding-left: 1.5em;
+}
+ul { list-style-type: none; }
+p {  }
+a { outline: none; }
+a img { border: none; }
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	vertical-align: baseline;
+}
+section, article, header, footer, nav, aside, hgroup { display: block; }
+/* END RESET */
+
+/* ------------------------------------------ */
+/* TOOLBOX CSS */
+/* ------------------------------------------ */
+a {
+  color: #0072dc;
+}
+.noshow { display: none !important; }
+.disabled {
+  opacity: .40;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+	filter: alpha(opacity=40);
+	cursor: default !important;
+}
+.error_notification {
+  font-weight: bold;
+  color: #fc4f12;
+  line-height: 2em;
+}
+a.inline_submit_button, a.external_submit_button {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  text-decoration: none;
+  text-align: center;
+  min-width: 150px;
+  -moz-border-radius: 22px;
+  -webkit-border-radius: 22px;
+  text-decoration: none;
+  line-height: 22px;
+  background-color: #fc4f12;
+  color: #fff;
+  font-weight: bold;
+  padding: 0 20px;
+}
+a.inline_submit_button:hover {
+  background-color: #ca3a06;
+}
+a.external_submit_button {
+  background-color: #5ab309;
+  margin: 20px 20px 0 0;
+}
+a.external_submit_button:hover {
+  background-color: #3c7806;
+}
+/* END TOOLBOX */
+
+/* ------------------------------------------ */
+/* PAGE STRUCTURE */
+/* ------------------------------------------ */
+#simple_form_content {
+  padding: 30px 35px 60px 35px;
+}
+#simple_form_content span.pre_label, #simple_form_content span.post_label {
+  font-size: 14px;
+}
+#simple_form_content span.pre_label {
+  padding-right: .25em;
+}
+#simple_form_content span.post_label {
+  padding-left: .25em;
+  margin-right: 20px;
+}
+#simple_form_content input {
+  border: 1px solid #a6a7a7;
+  font: 14px arial, helvetica, garuda, sans-serif;
+  padding: 0 .25em;
+  line-height: 1.3em;
+  width: 250px;
+}
+#simple_form_content h1 {
+  font-size: 24px;
+}
+#simple_form_content h2 {
+  font-size: 20px;
+}
+#simple_form_content h3 {
+  font-size: 16px;
+}
+#simple_form_content article {}
+#simple_form_content form article {
+  border-bottom: 1px solid #d7d7d7;
+  padding: 30px 0;
+}
+#simple_form_content form article:last-child {
+  border-bottom: none;
+  padding-bottom: 50px;
+}
+#simple_form_content form article h3 {
+  float: left;
+  width: 190px;
+}
+#simple_form_content form article div {
+  margin-left: 200px;
+}
+#simple_form_content form article div p, #simple_form_content form article div ol {
+  line-height: 1.5em;
+  padding-bottom: 1em;
+}
+#simple_form_content fieldset {
+  background-color: #e6edf2;
+  border: none;
+  padding: 12px;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  line-height: 30px;
+}
+#simple_form_content fieldset label {
+  font-weight: bold;
+  line-height: 18px;
+  padding-right: .5em;
+  width: 120px;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+}
+#callback_url {
+  font-weight: bold;
+  background-color: #f2f2f2;
+  border: 1px solid #a7a7a7;
+  padding: 0 .25em;
+}
+/* END STRUCTURE */

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Online API - Simple Form</title>
+    <!--[if IE]>
+      <script src="./js/html5shiv.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="./css/simple_form.css" />
+  </head>
+  <body>
+    <header></header>
+    <section id="simple_form_content">
+      <header>
+        <h1>Configure Source for your app</h1>
+      </header>
+      <form id="simple_form" method="get" action="#">
+        <article id="form_step_1">
+          <h3>1. Create an Endpoint</h3>
+          <div>
+            <span class="pre_label">https://</span><input type="text" id="appname" placeholder="application name" class="app_name js_errorContainer_endpoint_errors" /><span class="post_label">-api.apigee.com</span>
+            <a href="#" class="inline_submit_button" id="set_endpoint">Create endpoint</a>
+          </div>
+          <div class="error_notification noshow" id="endpoint_errors"></div>
+        </article>
+        <div class="disabled" id="form_step_2">
+          <article>
+            <h3>2. Add API Credentials</h3>
+            <div>
+              <p>
+                Sign in to <a href="https://dev.twitter.com/apps" title="twitter" class="js_doPopUp">dev.twitter.com/apps</a> (opens in a new window)
+              </p>
+              <ol>
+                <li>Create an application</li>
+                <li>Set the callback URL to be: <span id="callback_url"></span></li>
+                <li>Paste your credentials below:</li>
+              </ol>
+              <fieldset>
+                <label for="consumer_key">Consumer Key</label><input type="text" id="consumer_key" class=" js_errorContainer_key_secret_errors" />
+                <br />
+                <label for="consumer_secret">Consumer Secret</label><input type="text" id="consumer_secret" class=" js_errorContainer_key_secret_errors" />
+              </fieldset>
+            </div>
+            <div class="error_notification noshow" id="key_secret_errors"></div>
+          </article>
+          <article>
+            <a href="#" class="inline_submit_button" id="configure_app">Finish</a>
+          </article>
+        </div>
+      </form>
+      <article class="disabled" id="form_step_3">
+        <h2>Download the JavaScript Client Library</h2>
+        <a href="https://github.com/apigee/Apigee-Source-for-JavaScript/tarball/gh-pages" class="external_submit_button js_doPopUp">Get the JavaScript Client Library</a>
+        <a href="https://github.com/apigee/Apigee-Source-for-JavaScript" class="external_submit_button js_doPopUp">Download or Fork on GitHub</a>
+      </article>
+    </section><!-- /simple_form_content -->
+    <footer></footer>
+    <script src="./js/jquery_min.js"></script>
+    <script src="./js/base64_min.js"></script>
+    <script src="./js/apigee_api.js"></script>
+    <script src="./js/simple_form.js"></script>
+  </body>
+</html>

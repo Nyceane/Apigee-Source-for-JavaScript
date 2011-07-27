@@ -9,3 +9,6 @@ v2/js/html5shiv.js
 v2/js/jquery_min.js
 v2/css/main.css
 v2/sample.html
+v2/simple_form.html
+v2/css/simple_form.css
+v2/js/simple_form.js

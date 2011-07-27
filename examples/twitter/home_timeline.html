@@ -182,18 +182,22 @@
             if (userInfo.length == 2) {
               theApp.setAuth({'username':userInfo[0],'password':userInfo[1],'authorization':$.base64Encode(userInfo[0]+':'+userInfo[1])});
               theApp.api.init(userInfo[0],userInfo[1]);
+            } else {
+              showResponseMessage('Please include a username and a password.');
             }
             if (theApp.api.doesLocalStorage && localStorage.smartkey) {
               theApp.setAuth({'smartKey':localStorage.smartkey});
             } else if (theApp.api.authorization) {
               theApp.api.request('get','/smartkeys/me.json?uid='+theApp.api.authorization,{},{callback:'sampleApp.processSmartKey'});
             }
-            if (theApp.userObject.username) $('#logout_button_label').html(theApp.userObject.username);
-            $('#login_out_button').html('Log Out');
-            $('#create_account_button').addClass('noshow');
-            theApp.user_authenticated = true;
-            if (theApp.api.smartkey) {
-              theApp.sendRequest(sampleRequest);
+            if (theApp.userObject.username && theApp.userObject.password) {
+              $('#logout_button_label').html(theApp.userObject.username);
+              $('#login_out_button').html('Log Out');
+              $('#create_account_button').addClass('noshow');
+              theApp.user_authenticated = true;
+              if (theApp.api.smartkey) {
+                theApp.sendRequest(sampleRequest);
+              }
             }
           }
         }
@@ -220,6 +224,8 @@
           if ((userInfo.length == 2) && (theApp.api)) {
             if (theApp.api.doesLocalStorage) localStorage.authorization = $.base64Encode(userInfo[0]+':'+userInfo[1]);
             theApp.api.request('post','/users.json',{'userName':userInfo[0],'fullName':userInfo[0],'password':userInfo[1]},{callback:'sampleApp.newAccount'});
+          } else {
+            showResponseMessage('Please include a username and a password.');
           }
         }
         
@@ -251,6 +257,26 @@
           theApp.getAuth();
         }
         if (appName) theApp.init(appName);
+      }
+      
+      function showResponseMessage(theMessage) {
+        var theMessage = theMessage.replace(/<\/?[^>]+>/gi, '');
+        if (sampleApp.api.returnObject && (sampleApp.api.returnObject.xhr && sampleApp.api.returnObject.xhr.responseText)) {
+          var responseMessage = parseAndReturn(sampleApp.api.returnObject.xhr.responseText);
+          if (responseMessage.hasOwnProperty('message')) theMessage = responseMessage.message;
+        }
+        alert(theMessage);
+        sampleApp.logOut();
+      }
+      
+      function parseAndReturn(theText) {
+        var theJson = '';
+        try {
+          theJson = $.parseJSON(theText);
+        } catch (e) {
+          theJson = theText;
+        }
+        return theJson;
       }
       
     </script>

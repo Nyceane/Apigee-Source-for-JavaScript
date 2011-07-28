@@ -12,3 +12,6 @@ v2/sample.html
 v2/simple_form.html
 v2/css/simple_form.css
 v2/js/simple_form.js
+examples/twitter/tbyb.html
+v2/css/tbyb.css
+v2/js/tbyb.js

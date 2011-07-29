@@ -1,6 +1,7 @@
 var tempoContainer, sampleApp;
 $(document).ready(function() {
   var appName = 'marshtimeline';
+  //var appName = 'sourcesample';
   sampleApp = new SampleApplication(appName);
   tempoContainer = Tempo.prepare('render_template_holder');
   initPage();
@@ -38,8 +39,17 @@ function SampleApplication(appName) {
   this.processSmartKey = function(data) {
     var data = $.parseJSON(data);
     theApp.setAuth(data);
-    //if (theApp.api) theApp.sendRequest(sampleRequest);
-    if (theApp.api) theApp.makeRequest();
+    theApp.logIn();
+  }
+  
+  this.processKeyAndSecret = function(data) {
+    var data = $.parseJSON(data);
+    if (data.hasOwnProperty('oauthToken') && data.hasOwnProperty('oauthTokenSecret')) {
+      theApp.setAuth(data);
+      theApp.logIn();
+    } else {
+      showResponseMessage('Please re-try your login credentials or create a new account');
+    }
   }
   
   this.setAuth = function(authObject) {
@@ -62,6 +72,7 @@ function SampleApplication(appName) {
   
   this.logIn = function() {
     if (theApp.api) {
+      var goodUser = true;
       var userInfo = [];
       if (theApp.api.doesLocalStorage && localStorage.authorization) {
         userInfo = $.base64Decode(localStorage.authorization).split(':');
@@ -73,33 +84,69 @@ function SampleApplication(appName) {
         theApp.api.init(userInfo[0],userInfo[1]);
       } else {
         showResponseMessage('Please include a username and a password.');
+        goodUser = false;
       }
-      if (theApp.api.doesLocalStorage && localStorage.smartkey) {
-        theApp.setAuth({'smartKey':localStorage.smartkey});
+      if ((theApp.api.doesLocalStorage && (localStorage.smartkey || localStorage.smartKey)) || (theApp.userObject.smartKey || theApp.userObject.smartkey)) {
+        var theSmartKey;
+        if (theApp.api.doesLocalStorage && (localStorage.smartkey || localStorage.smartKey)) {
+          theSmartKey = (localStorage.smartkey) ? localStorage.smartkey : localStorage.smartKey;
+        } else {
+          theSmartKey = (theApp.userObject.smartkey) ? theApp.userObject.smartkey : theApp.userObject.smartKey;
+        }
+        theApp.setAuth({'smartKey':theSmartKey,'smartkey':theSmartKey});
       } else if (theApp.api.authorization) {
         theApp.api.request('get','/smartkeys/me.json?uid='+theApp.api.authorization,{},{callback:'sampleApp.processSmartKey'});
+        goodUser = false;
+      } else {
+        showResponseMessage('Please re-try your login credentials or create a new account');
+        goodUser = false;
       }
-      if (theApp.userObject.username && theApp.userObject.password) {
-        $('#logout_button_label').html(theApp.userObject.username);
-        $('#login_out_button').html('Log Out');
-        $('#create_account_button').addClass('noshow');
-        theApp.user_authenticated = true;
-        //if (theApp.api.smartkey) theApp.sendRequest(sampleRequest);
-        if (theApp.api.smartkey) theApp.makeRequest();
+      if ((theApp.api.doesLocalStorage && (localStorage.oauthToken && localStorage.oauthTokenSecret)) || (theApp.userObject.oauthToken && theApp.userObject.oauthTokenSecret)) {
+        var theToken, theSecret;
+        if (theApp.api.doesLocalStorage && (localStorage.oauthToken && localStorage.oauthTokenSecret)) {
+          theToken = localStorage.oauthToken;
+          theSecret = localStorage.oauthTokenSecret;
+        } else {
+          theToken = theApp.userObject.oauthToken;
+          theSecret = theApp.userObject.oauthTokenSecret;
+        }
+        theApp.setAuth({'oauthToken':theToken,'oauthTokenSecret':theSecret});
+      } else if (theApp.userObject.smartKey) {
+        theApp.api.request('get','/smartkeys/'+theApp.userObject.smartKey+'/providers/twitter.json',{},{callback:'sampleApp.processKeyAndSecret'});
+        goodUser = false;
+      } else {
+        goodUser = false;
+      }
+      if (goodUser) {
+        theApp.showLoggedIn();
       }
     }
   }
   
+  this.showLoggedIn = function() {
+    //test for whatever factors (username, pw, whatever)
+    $('#logout_button_label').html(theApp.userObject.username);
+    $('#login_out_button').html('Log Out');
+    $('#create_account_button').addClass('noshow');
+    theApp.user_authenticated = true;
+    theApp.makeRequest();
+  }
+  
   this.logOut = function() {
-    var userCredentials = ['smartkey','username','password','authorization'];
+    var userCredentials = [];
+    for (var key in theApp.userObject) {
+      if (theApp.userObject.hasOwnProperty(key)) {
+        userCredentials.push(key);
+      }
+    }
     for (var i=0; i<userCredentials.length; i++) {
       var thisCredential = userCredentials[i];
       if (theApp.api) {
         if (theApp.api.doesLocalStorage) localStorage.removeItem(thisCredential);
-        if (theApp.api[thisCredential]) theApp.api[thisCredential] = null;
-        if (theApp.userObject[thisCredential]) theApp.userObject[thisCredential] = null;
+        if (theApp.api[thisCredential]) delete theApp.api[thisCredential];
+        if (theApp.userObject[thisCredential]) delete theApp.userObject[thisCredential];
       }
-    }
+    }  
     tempoContainer.clear();
     $('#logout_button_label').html('');
     $('#login_out_button').html('Log In');

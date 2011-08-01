@@ -139,6 +139,11 @@ header p a:link, header p a:visited, footer p a:link, footer p a:visited {
   color: #ff4300;
   text-decoration: none;
 }
+#source_code { 
+  height:100%;
+  width:100%;
+  min-height:300px;
+}
 footer p a:hover {
   color: #0072dc;
 }

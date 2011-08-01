@@ -1,4 +1,5 @@
 var tempoContainer, sampleApp;
+var editor;
 $(document).ready(function() {
   var appName = 'marshtimeline';
   //var appName = 'sourcesample';
@@ -229,17 +230,26 @@ function parseAndReturn(theText) {
 }
 
 function viewSource() {
-  if (sampleApp && (sampleApp.user_authenticated == false)) sampleApp.logIn();
-  if ($("#source_code").val().length == 0) $("#source_code").val($("#editable_script").text());
+  if (sampleApp && (sampleApp.user_authenticated == false)) {
+  	sampleApp.logIn();
+  }	
+  if ($("#source_code").val().length == 0) {
+  	$("#source_code").html($("#editable_script").text());
+  } 
   setSourceHeight();
   $('#source_view').fadeIn('slow');
+   editor = ace.edit("source_code");
+   editor.setTheme("ace/theme/twilight");
+   var JavaScriptMode = require("ace/mode/javascript").Mode;
+   editor.getSession().setMode(new JavaScriptMode());
+   $(".ace_print_margin").css('background','none no-repeat');
 }
 
 function setSourceHeight() {
   var windowHeight = $(window).height();
   var sourceHeight = ($("#toggle_view_holder").height() + $("#render_template_holder").height());
   var targetHeight = (windowHeight > sourceHeight) ? windowHeight : sourceHeight;
-  $("#source_code").height(targetHeight - ($("#source_header").height() + 5));
+  $("#source_code").height(targetHeight - ($("#source_header").height() + 69));
 }
 
 function hideSource() {
@@ -249,7 +259,7 @@ function hideSource() {
 }
 
 function runSource() {
-  var newCode = $("#source_code").val();
+  var newCode = editor.getSession().getValue();
   try {
     eval(newCode);
     initPage();

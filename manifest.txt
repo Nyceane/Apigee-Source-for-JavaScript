@@ -15,3 +15,7 @@ v2/js/simple_form.js
 examples/twitter/tbyb.html
 v2/css/tbyb.css
 v2/js/tbyb.js
+v2/js/ace.js
+v2/js/mode-javascript.js
+v2/js/theme-twilight.js
+v2/js/worker-javascript.js

@@ -69,8 +69,12 @@ header form {
   padding-top: 1px;
 }
 header label {
-  padding: 0 5px 0 0;
+  padding: 0 5px;
   font-size: 11px;
+  line-height: 20px;
+}
+.user_info {
+  background-color: #063;
 }
 header button {
   font-size: 11px;

@@ -1,5 +1,4 @@
-var tempoContainer, sampleApp;
-var editor;
+var tempoContainer, sampleApp, editor;
 $(document).ready(function() {
   var appName = 'marshtimeline';
   //var appName = 'sourcesample';
@@ -26,6 +25,7 @@ $(document).ready(function() {
     window.open(this.href);
     return false;
   });
+  console.log(localStorage);
 });
 
 function SampleApplication(appName) {
@@ -34,7 +34,7 @@ function SampleApplication(appName) {
   this.user_authenticated = false;
   
   this.getAuth = function() {
-    if (theApp.api && (theApp.api.doesLocalStorage && localStorage.authorization)) theApp.logIn();
+    if (theApp.api && theApp.api.doesLocalStorage) theApp.logIn();
   }
   
   this.processSmartKey = function(data) {
@@ -72,16 +72,25 @@ function SampleApplication(appName) {
   }
   
   this.logIn = function() {
+    var demoUser = ["marsh","testing"];
+    //var demoUser = ["demo","test"];
     if (theApp.api) {
       var goodUser = true;
       var userInfo = [];
-      if (theApp.api.doesLocalStorage && localStorage.authorization) {
-        userInfo = $.base64Decode(localStorage.authorization).split(':');
+      if (theApp.api.doesLocalStorage) {
+        if (localStorage.authorization) {
+          userInfo = $.base64Decode(localStorage.authorization).split(':');
+        } else if (localStorage.didLogOut) {
+          userInfo = prompt('Please enter your Apigee username and password, separated by a space.').split(' ');
+        } else {
+          userInfo = demoUser;
+        }
       } else {
-        userInfo = prompt('Please enter your Apigee username and password, separated by a space.').split(' ');
+        userInfo = prompt('Please enter your Apigee username and password, separated by a space.\n\nIf you would like to test this application as a demo user, please use "'+demoUser[0]+'" and "'+demoUser[1]+'" as your credentials.').split(' ');
       }
       if (userInfo.length == 2) {
-        theApp.setAuth({'username':userInfo[0],'password':userInfo[1],'authorization':$.base64Encode(userInfo[0]+':'+userInfo[1])});
+        var displayName = (userInfo[0] == demoUser[0]) ? 'You\'re signed in as a demo user' : userInfo[0];
+        theApp.setAuth({'displayname':displayName,'username':userInfo[0],'password':userInfo[1],'authorization':$.base64Encode(userInfo[0]+':'+userInfo[1])});
         theApp.api.init(userInfo[0],userInfo[1]);
       } else {
         showResponseMessage('Please include a username and a password.');
@@ -125,8 +134,9 @@ function SampleApplication(appName) {
   }
   
   this.showLoggedIn = function() {
-    //test for whatever factors (username, pw, whatever)
-    $('#logout_button_label').html(theApp.userObject.username);
+    $('#logout_button_label').html(theApp.userObject.displayname);
+    if (theApp.userObject.displayname != theApp.userObject.username) $('#logout_button_label').addClass('user_info');
+    console.log(theApp.userObject);
     $('#login_out_button').html('Log Out');
     $('#create_account_button').addClass('noshow');
     theApp.user_authenticated = true;
@@ -148,8 +158,10 @@ function SampleApplication(appName) {
         if (theApp.userObject[thisCredential]) delete theApp.userObject[thisCredential];
       }
     }  
+    if (theApp.api && theApp.api.doesLocalStorage) localStorage.didLogOut = true;
     tempoContainer.clear();
     $('#logout_button_label').html('');
+    $('#logout_button_label').removeClass('user_info');
     $('#login_out_button').html('Log In');
     $('#create_account_button').removeClass('noshow');
     theApp.user_authenticated = false;

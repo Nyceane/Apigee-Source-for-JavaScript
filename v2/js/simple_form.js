@@ -4,19 +4,49 @@ var lastApp, errorContainer;
 $(document).ready(function() {
   setUpLinks();
   setUpInputs();
+  getAppStatus();
+  $("#callback_url").click(function() {
+    var refNode = $( this )[0];
+		if ( $.browser.msie ) {
+			var range = document.body.createTextRange();
+			range.moveToElementText( refNode );
+			range.select();
+		} else if ( $.browser.mozilla || $.browser.opera ) {
+			var selection = window.getSelection();
+			var range = document.createRange();
+			range.selectNodeContents( refNode );
+			selection.removeAllRanges();
+			selection.addRange( range );
+		} else if ( $.browser.safari ) {
+			var selection = window.getSelection();
+			selection.setBaseAndExtent( refNode, 0, refNode, 1 );
+		}
+  });
 });
 
-function ApigeeApp(appName) {
+function ApigeeApp(appName,appExists) {
   var theApp = lastApp = this;
+  this.appExists = appExists || false;
+  this.hasCredentials = false;
   this.create = function(appName) {
     lastApp = theApp;
     errorContainer = 'endpoint_errors';
-    theApp.api.request('post','apps',{'appName':appName,'displayName':appName,'version':'0'},{'callback':'appCreated'});
+    if (theApp.appExists) {
+      theApp.api.request('get','apps/'+theApp.appName+'.json?uid='+theApp.api.authorization+'&',{},{'callback':'appCreated'});
+    } else {
+      theApp.api.request('post','apps',{'appName':appName,'displayName':appName,'version':'0'},{'callback':'appCreated'});
+    }
   }
   this.configureApp = function(consumerKey,consumerSecret) {
     lastApp = theApp;
     errorContainer = 'key_secret_errors';
-    theApp.api.request('post','apps/'+theApp.appName+'/providers/twitter/credentials',{'consumerKey':consumerKey,'consumerSecret':consumerSecret},{'callback':'appConfigured'});
+    var verb = (theApp.hasOwnProperty("consumerKey") && theApp.hasOwnProperty("consumerSecret")) ? 'put' : 'post';
+    theApp.api.request(verb,'apps/'+theApp.appName+'/providers/twitter/credentials',{'consumerKey':consumerKey,'consumerSecret':consumerSecret},{'callback':'appConfigured'});
+  }
+  this.checkCredentials = function() {
+    lastApp = theApp;
+    errorContainer = 'key_secret_errors';
+    theApp.api.request('get','apps/'+theApp.appName+'/providers/twitter/credentials?uid='+theApp.api.authorization+'&',{},{'callback':'appConfigured'});
   }
   this.init = function(appName) {
     var endPoint = 'https://api.apigee.com/v1/';
@@ -28,8 +58,27 @@ function ApigeeApp(appName) {
   if (appName) theApp.init(appName);
 }
 
-function createApp(appName) {
-  userApp = new ApigeeApp($.trim(appName.split(" ")[0]));
+function getAppStatus() {
+  var tempApp = new $.apigee_api('https://api.apigee.com/v1/');
+  tempApp.request('get','apps.json?uid='+tempApp.authorization+'&',{},{'callback':'setAppStatus'});
+}
+
+function setAppStatus(data) {
+  var data = parseAndReturn(data);
+  var appName = false;
+  if (data.hasOwnProperty('app')) {
+    for (var key in data.app) {
+      if (data.app.hasOwnProperty(key)) {
+        if (data.app[key].hasOwnProperty('appName')) appName = data.app[key].appName;
+      }
+    }
+  }
+  if (appName != false) createApp(appName,true);
+}
+
+function createApp(appName,appExists) {
+  var appExists = appExists || false;
+  userApp = new ApigeeApp($.trim(appName.split(" ")[0]),appExists);
 }
 
 function configureApp(consumerKey,consumerSecret) {
@@ -38,17 +87,38 @@ function configureApp(consumerKey,consumerSecret) {
 
 function appCreated(data) {
   var data = parseAndReturn(data);
-  $("#form_step_2").removeClass("disabled");
-  if (data.hasOwnProperty("endpoint")) $("#callback_url").text(data.endpoint+'/authcallback/twitter');
-  $("#set_endpoint").addClass("disabled");
-  $("#set_endpoint").click(function() { return false; });
+  if (data.hasOwnProperty("appName")) {
+    $("#consumer_key").val('');
+    $("#consumer_secret").val('');
+    $("#appname").val(data.appName);
+    var thisApp = userApps[data.appName];
+    thisApp.appExists = true;
+    $("#form_step_1").addClass("disabled");
+    $("#form_step_2").removeClass("disabled");
+    var callBackUrl = (data.hasOwnProperty("endpoint")) ? data.endpoint : 'https://'+data.appName+'-api.apigee.com';
+    $("#callback_url").text(callBackUrl+'/authcallback/twitter');
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) thisApp[key] = data[key];
+    }
+    $("#set_endpoint").addClass("disabled");
+    $("#set_endpoint").click(function() { return false; });
+    thisApp.checkCredentials();
+  }
 }
 
 function appConfigured(data) {
   var data = parseAndReturn(data);
-  $("#form_step_3").removeClass("disabled");
-  $("#configure_app").addClass("disabled");
-  $("#configure_app").click(function() { return false; });
+  if (data.hasOwnProperty("appName")) {
+    var thisApp = userApps[data.appName];
+    if (data.hasOwnProperty("consumerKey") && data.hasOwnProperty("consumerSecret")) {
+      $("#consumer_key").val(data.consumerKey);
+      $("#consumer_secret").val(data.consumerSecret);
+    }
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) thisApp[key] = data[key];
+    }
+    $("#form_step_3").removeClass("disabled");
+  }
 }
 
 function setUpLinks() {

@@ -1,0 +1,89 @@
+/* 
+    AUTHOR: Dieter Randolph
+*/
+
+/* ------------------------------------------ */
+/* RESETS, BASIC PAGE SETUP, BASIC TYPOGRAPHY */
+/* ------------------------------------------ */
+* { margin: 0; padding: 0; }
+:focus { outline: 0; }
+html {  }
+body { background-color: #fff;}
+ul { list-style-type: none; }
+p {  }
+a { outline: none; }
+a img { border: none; }
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	vertical-align: baseline;
+}
+section, article, header, footer, nav, aside, hgroup { display: block; }
+/* END RESET */
+
+/* ------------------------------------------ */
+/* TOOLBOX CSS */
+/* ------------------------------------------ */
+a:link, a:visited {}
+a:hover {}
+/* END TOOLBOX */
+
+/* ------------------------------------------ */
+/* PAGE STRUCTURE */
+/* ------------------------------------------ */
+#cli_holder, #cli_input {
+  font-family: monospace;
+  color: #222;
+  font-size: 13px;
+  line-height: 1.5em;
+}
+#cli_holder {
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+  background-color: #fff;
+  font-family: monospace;
+  color: #222;
+}
+#cli_input {
+  border: none;
+  font-weight: bold;
+  width: 90%;
+}
+#cli_transcript li.request {
+  color: #444;
+  cursor: pointer;
+  font-weight: bold;
+  padding-left: 1px;
+}
+#cli_transcript li.information {
+  padding-bottom: 1.5em;
+}
+#cli_transcript li.response {
+  color: #222;
+  padding-left: 2em;
+  padding-bottom: 1.5em;
+}
+#cli_transcript li a {
+  color: #0072dc;
+}
+#cli_transcript li.response span {
+  color: #5ab309;
+}
+#cli_transcript li.response strong {
+  text-transform: uppercase;
+  font-weight: normal;
+}
+#cli_transcript li.response strong.smartkey {
+  text-transform: none;
+  font-weight: bold;
+  color: #ff4300;
+}
+li.request:before, .prompt:before {
+  content:"> ";
+}
+#cli_transcript li.response a, #cli_transcript li.information a {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUeF59z4EJADEIQ1F36k7u5E7ZKXeUQPACJ3wK7UNokVxVk9kHnQH7bY9hbDyDhNXgjpRLqFlo4M2GgfyJHhjq8V4agfrgPQX3JtJQGbofmCHgA/nAKks+JAjFAAAAAElFTkSuQmCC) no-repeat 100% 0;
+  padding-right: 13px;
+}
+/* END STRUCTURE */

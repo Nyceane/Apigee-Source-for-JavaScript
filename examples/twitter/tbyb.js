@@ -1,8 +1,8 @@
 var tempoContainer, sampleApp, editor;
 $(document).ready(function() {
   testConsole();
-  var appName = 'marshtimeline';
-  //var appName = 'sourcesample';
+  //var appName = 'marshtimeline';
+  var appName = 'sourcesample';
   sampleApp = new SampleApplication(appName);
   tempoContainer = Tempo.prepare('render_template_holder');
   initPage();
@@ -81,12 +81,12 @@ function SampleApplication(appName) {
         if (localStorage.authorization) {
           userInfo = $.base64Decode(localStorage.authorization).split(':');
         } else if (localStorage.didLogOut) {
-          userInfo = prompt('Please enter your Apigee username and password, separated by a space.').split(' ');
+          userInfo = prompt('Enter your username and password, separated by a space.').split(' ');
         } else {
           userInfo = demoUser;
         }
       } else {
-        userInfo = prompt('Please enter your Apigee username and password, separated by a space.\n\nIf you would like to test this application as a demo user, please use "'+demoUser[0]+'" and "'+demoUser[1]+'" as your credentials.').split(' ');
+        userInfo = prompt('Enter your username and password, separated by a space.\n\nIf you would like to test this application as a demo user, please use "'+demoUser[0]+'" and "'+demoUser[1]+'" as your credentials.').split(' ');
       }
       if (userInfo.length == 2) {
         var displayName = (userInfo[0] == demoUser[0]) ? 'You\'re signed in as a demo user' : userInfo[0];

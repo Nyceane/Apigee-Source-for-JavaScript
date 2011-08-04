@@ -19,3 +19,4 @@ setup/index.html
 examples/twitter/index.html
 examples/twitter/tbyb.css
 examples/twitter/tbyb.js
+examples/twitter/tempo.min.js

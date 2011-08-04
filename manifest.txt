@@ -15,6 +15,7 @@ cli/cli_layer.js
 setup/simple_form.html
 setup/simple_form.css
 setup/simple_form.js
+setup/index.html
 examples/twitter/index.html
 examples/twitter/tbyb.css
 examples/twitter/tbyb.js

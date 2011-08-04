@@ -82,12 +82,12 @@ function SampleApplication(appName) {
         if (localStorage.authorization) {
           userInfo = $.base64Decode(localStorage.authorization).split(':');
         } else if (localStorage.didLogOut) {
-          userInfo = prompt('Enter your username and password, separated by a space.').split(' ');
+          userInfo = prompt('Please enter your Apigee username and password, separated by a space.').split(' ');
         } else {
           userInfo = demoUser;
         }
       } else {
-        userInfo = prompt('Enter your username and password, separated by a space.\n\nIf you would like to test this application as a demo user, please use "'+demoUser[0]+'" and "'+demoUser[1]+'" as your credentials.').split(' ');
+        userInfo = prompt('Please enter your Apigee username and password, separated by a space.\n\nIf you would like to test this application as a demo user, please use "'+demoUser[0]+'" and "'+demoUser[1]+'" as your credentials.').split(' ');
       }
       if (userInfo.length == 2) {
         var displayName = (userInfo[0] == demoUser[0]) ? 'You\'re signed in as a demo user' : userInfo[0];
@@ -137,7 +137,6 @@ function SampleApplication(appName) {
   this.showLoggedIn = function() {
     $('#logout_button_label').html(theApp.userObject.displayname);
     if (theApp.userObject.displayname != theApp.userObject.username) $('#logout_button_label').addClass('user_info');
-    console.log(theApp.userObject);
     $('#login_out_button').html('Log Out');
     $('#create_account_button').addClass('noshow');
     theApp.user_authenticated = true;
@@ -145,7 +144,7 @@ function SampleApplication(appName) {
   }
   
   this.logOut = function() {
-    var userCredentials = [];
+    var userCredentials = ['authorization'];
     for (var key in theApp.userObject) {
       if (theApp.userObject.hasOwnProperty(key)) {
         userCredentials.push(key);
@@ -219,12 +218,12 @@ function SampleApplication(appName) {
 
 function showResponseMessage(theMessage) {
   var theMessage = theMessage.replace(/<\/?[^>]+>/gi, '');
-  if (sampleApp.api.returnObject && (sampleApp.api.returnObject.xhr && sampleApp.api.returnObject.xhr.responseText)) {
+  if (sampleApp && (sampleApp.api && (sampleApp.api.returnObject && (sampleApp.api.returnObject.xhr && sampleApp.api.returnObject.xhr.responseText)))) {
     var responseMessage = parseAndReturn(sampleApp.api.returnObject.xhr.responseText);
     if (responseMessage.hasOwnProperty('message')) theMessage = responseMessage.message;
   }
   alert(theMessage);
-  sampleApp.logOut();
+  if (sampleApp) sampleApp.logOut();
 }
 
 function getJsonFromData(data) {

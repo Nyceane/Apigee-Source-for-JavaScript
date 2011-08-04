@@ -1,8 +1,8 @@
 var tempoContainer, sampleApp, editor;
 $(document).ready(function() {
   testConsole();
-  //var appName = 'marshtimeline';
-  var appName = 'sourcesample';
+  var appName = 'marshtimeline';
+  //var appName = 'sourcesample';
   sampleApp = new SampleApplication(appName);
   tempoContainer = Tempo.prepare('render_template_holder');
   initPage();

@@ -1,5 +1,6 @@
 var tempoContainer, sampleApp, editor;
 $(document).ready(function() {
+  testConsole();
   var appName = 'marshtimeline';
   //var appName = 'sourcesample';
   sampleApp = new SampleApplication(appName);
@@ -25,7 +26,6 @@ $(document).ready(function() {
     window.open(this.href);
     return false;
   });
-  console.log(localStorage);
 });
 
 function SampleApplication(appName) {
@@ -279,5 +279,12 @@ function runSource() {
   } catch (e) {
     alert('Looks like that code didn\'t work.\n\nThe specific error information has been logged to your browser\'s console.\n\nPlease try again or refresh the page to start from scratch.');
     console.log(e);
+  }
+}
+
+function testConsole() {
+  if (typeof console === "undefined" || typeof console.log === "undefined") {
+    console = {};
+    console.log = function() {};
   }
 }

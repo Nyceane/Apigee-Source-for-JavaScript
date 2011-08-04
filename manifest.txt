@@ -7,12 +7,12 @@ js/ace.js
 js/mode-javascript.js
 js/theme-twilight.js
 js/worker-javascript.js
-cli/main.css
+css/main.css
 cli/index.html
 cli/howto.html
 cli/apigee_cli.js
 cli/cli_layer.js
-setup/index.html
+setup/simple_form.html
 setup/simple_form.css
 setup/simple_form.js
 examples/twitter/index.html

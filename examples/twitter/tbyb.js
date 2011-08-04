@@ -65,6 +65,7 @@ function SampleApplication(appName) {
   
   this.toggleLog = function() {
     if (theApp.user_authenticated) {
+      if (theApp.api && theApp.api.doesLocalStorage) localStorage.didLogOut = true;
       theApp.logOut();
     } else {
       theApp.logIn();
@@ -158,7 +159,6 @@ function SampleApplication(appName) {
         if (theApp.userObject[thisCredential]) delete theApp.userObject[thisCredential];
       }
     }  
-    if (theApp.api && theApp.api.doesLocalStorage) localStorage.didLogOut = true;
     tempoContainer.clear();
     $('#logout_button_label').html('');
     $('#logout_button_label').removeClass('user_info');

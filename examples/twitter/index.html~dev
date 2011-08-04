@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample Application</title>
+    <!--[if IE]>
+      <script src="../js/html5shiv.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="./tbyb.css" />
+  </head>
+  <body>
+    <header>
+      <form id="user_data" method="#" action="get">
+        <label for="login_out_button" id="logout_button_label"></label>
+        <button type="button" id="login_out_button">Log In</button>
+        <button type="button" id="create_account_button">Create Account</button>
+      </form>
+      <h1>Sample Application</h1>
+      <p>
+        Configure Apigee Source for your own app.  <a href="http://apigee.com/source" class="js_doPopUp" title="get started">Get started!</a>
+      </p>
+      <div class="clear"></div>
+    </header>
+    <section id="toggle_view_holder">
+      <a href="#" class="inline_submit_button" id="view_source">Edit the API request</a>
+    </section>
+    <section id="render_template_holder">
+      <article class="noshow">
+        <img src="{{user.profile_image_url}}" alt="{{user.name}}" /><h2>{{user.name}}</h2><p class="text">{{text}} - <a class="timestamp" href="https://twitter.com/#!/{{user.name}}/status/{{id_str}}" target="_blank" title="view on web">{{created_at | date '\at DD-MM-YYYY HH:mm'}}</a></p>
+      </article>
+    </section>
+    <footer id="page_footer">
+      <p>
+        This simple application demonstrates the power of Apigee Source to make working with APIs easy.  <a href="http://apigee.com/about/products/source.html" title="learn how" class="js_doPopUp">Learn How</a>.
+      </p>
+    </footer>
+    <div id="source_view" style="display: none;">
+      <header id="source_header">
+        <form id="run_source" method="#" action="get">
+          <label for="run_source_button"><em>See how easy it is to make a request?</em></label>
+          <button type="button" id="run_source_button">Run</button>
+        </form>
+        <h1>Edit the sample app code</h1>
+        <div class="clear"></div>
+      </header>
+      <pre id="source_code"></pre>
+    </div>
+<!--
+    <script src="https://apigee.com/apps/js/jquery_min.js"></script>
+    <script src="https://apigee.com/apps/js/base64_min.js"></script>
+    <script src="https://apigee.com/apps/js/apigee_api.js"></script>
+    <script src="https://apigee.com/apps/examples/twitter/tempo.min.js"></script>
+-->
+    <script src="../../js/jquery_min.js"></script>
+    <script src="../../js/base64_min.js"></script>
+    <script src="../../js/apigee_api.js"></script>
+    <script src="./tempo.min.js"></script>
+    <script src="./tbyb.js"></script>
+	<script src="../../js/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/theme-twilight.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" id="editable_script">
+  var initPage = function() {
+    //THIS IS WHERE THE MAGIC HAPPENS
+    //TRY CHANGING THE REQUEST TO SOMETHING ELSE,
+    //SUCH AS '/twitter/1/statuses/user_timeline.json'
+    //AS IN THE EXAMPLE BELOW
+    sampleApp.makeRequest = function() {
+      this.sendRequest('get','/twitter/1/statuses/home_timeline.json');
+      //this.sendRequest('get','/twitter/1/statuses/user_timeline.json'); //Example
+    }
+    
+    sampleApp.renderData = function(data) {
+      //We're using Tempo for the rendering, but you can use anything you like
+      tempoContainer.render(getJsonFromData(this.api.returnObject.payload));
+      $('#render_template_holder').find('article').removeClass('noshow');
+    }
+  }
+  
+/*
+  
+  Did you see that?  You just connected to Twitter using OAuth in seconds.
+
+  What's happening here?
+  You created an Apigee demo app user account and were assigned a smartkey
+  Your smartkey and twitter authorization were linked.
+  We made a request for your home timeline using your smartkey.
+  You saw your home timeline without the pain of OAuth.
+  
+  What’s next?
+  Check out Source and create your own app!
+  
+*/
+
+</script>
+  </body>
+</html>

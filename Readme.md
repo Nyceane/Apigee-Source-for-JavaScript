@@ -27,5 +27,13 @@ For every user of your application, Apigee will create a SmartKey. This simple s
 ## What's happening under the hood?
 Essentially, an Apigee API Gateway is mediating SmartKey-signed requests to OAuth. As more providers are added, this will make it so that all APIs can be interacted with one, simple mechanism. This diagram illustrates [how the OAuth dance is delegated](https://docs.google.com/drawings/pub?id=1CPCIa8t8lqHnbI1EQDVIWSxAJINLiysNasU55xHrmnA&w=903&h=961) so that adding and authenticating new users becomes simple.
 
-##Get in Touch
+## Get in Touch
 This is still an Apigee Labs feature, so we want to hear from you about your experience with it. Please send any feedback to [source@apigee.com](mailto:source@apigee.com).
+
+## Known Issues:
+* *IE 9:*  Source doesn't work properly with IE 9.  Sorry, most of us use Macs with Chrome, Firefox or Safari.  We'll get to IE though.
+* Only one application per apigee.com console user currently supported.  The setup UI only supports a single Application Endpoint for this version.  
+* Only Twitter API currently supported.
+* Error messaging and setup feedback is "light" to say the least.
+* Sample apps must be hosted on a web server instead of locally or via jsbin.
+* Application Endpoint Whitelisting isn't currently implemented.  An application other than yours could hit your endpoint if they knew about it.       

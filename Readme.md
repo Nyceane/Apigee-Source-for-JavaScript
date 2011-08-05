@@ -12,10 +12,10 @@ For every user of your application, Apigee will create a SmartKey. This simple s
 ## Quick Start Guide
 1. Set up an application endpoint at [https://apigee.com/source]( https://apigee.com/source "Apigee Source")
     * Name your application endpoint
-    * Create an app at twitter and provide the consumer key/secret to Apigee Source
+    * Create an app at dev.twitter.com and provide the consumer key/secret to Apigee Source
 2. Download the javascript library from GitHub.
 3. Edit the included sample html app  examples/twitter/home_timeline.html
-    * Change the appName on line 124 your application endpoint name.
+    * Change the appName on line 124 to your application endpoint name.
 4. Upload your home_timeline.html app to a webserver.
     * Sorry, this currently doesn't work with JSBin or from your local filesystem (we are working on it though)
 5. Create a new end user for your Source application using the home_timeline.html app.
